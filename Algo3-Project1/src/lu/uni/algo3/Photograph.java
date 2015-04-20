@@ -3,12 +3,20 @@ public class Photograph {
 	public Photograph(int iD, DateTime dateTimeCaptured, String locationOnDisk, Vehicle vehicle){
 		
 	}
-	private int _ID;
-	public int ID(){
-		return this._ID;
+	private int _iD;
+	public int iD(){
+		return this._iD;
 	}
-	private DateTime _DateTimeCaptured;
-	public DateTime DateTime(){
-		return this._DateTimeCaptured;
+	private DateTime _dateTimeCaptured;
+	public DateTime dateTime(){
+		return this._dateTimeCaptured;
+	}
+	private String _locationOnDisk;
+	public String locationOnDiks(){
+		return this._locationOnDisk;
+	}
+	private Vehicle _vehicle;
+	public Vehicle vehicle(){
+		return this._vehicle;
 	}
 }
