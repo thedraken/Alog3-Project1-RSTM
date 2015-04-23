@@ -2,6 +2,9 @@ package lu.uni.algo3;
 
 import java.util.Random;
 
+import lu.uni.algo3.SQLIndexer.SQLType;
+import lu.uni.algo3.exceptions.SQLOutOfRangeException;
+
 public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	private int id;
@@ -12,9 +15,34 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private Random random;
 	boolean exitRoadMap = false;
 	// TODO listOfRecords
+	
+	//maximum time a vehicle takes to one roadSection to the next
+	//should this be here on in the simulator?
+	private static final int MAXCARWAITTIME = 10000;
+	
+	/*suggestion for SQLIndexer singleton:
+	 * since we have multiple threads accessing this method we should probably use
+	 * double checked locking to make sure only one instance is created:
+	 
+	public static SQLIndexer getInstance(){
+		if (instance == null)
+			syncDoubleCheck();
+		return instance;
+	}
+	private static synchronized void syncDoubleCheck(){
+		if (instance == null)
+			instance = new SQLIndexer();
+	}
+	 */
 
-	public Vehicle(int id, String licencePlate, Category category){
-		this.id = id;
+	public Vehicle(String licencePlate, Category category){
+		//SQLIndexer is responsible to increment and assign unique IDs
+		SQLIndexer indexer = SQLIndexer.getInstance();
+		try {
+			this.id = indexer.getNewID(SQLType.Vehicle);
+		} catch (SQLOutOfRangeException e) {
+			System.err.println(e.getMessage());
+		}
 		this.licencePlate = licencePlate;
 		this.category = category;
 		random = new Random();
@@ -37,7 +65,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		return category;
 	}
 	
-	//only trucks have transponders?
+	//only trucks have transponders(?)
 	public void setTransponder(String transponder){
 		if(category.equals(Category.HGV) || category.equals(Category.LGV)){
 			this.transponder = transponder; 
@@ -57,13 +85,17 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			//...
 			
 			//move and simulate different random speeds
-			//Thread.sleep(random.nextInt(Simulator.MAXCARWAITTIME));
+			try {
+				Thread.sleep(random.nextInt(MAXCARWAITTIME));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			//leave roadSection 
 			//to next roadSection or leave Road (to other Road or not)
 			endOfRoadSectionBehavior();
 			//...
-			
 		}	
 	}
 	
@@ -96,15 +128,29 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		//TODO
+	//two vehicles will be considered equal if they have the same id
+	//(should licencePlate be included?)
+	public boolean equals(Object obj){
+		if(obj == null){
+			return false;
+		}
+		if(!(obj instanceof Vehicle)){
+			return false;
+		}
+		if(this == obj){
+			return true;
+		}
+		
+		Vehicle vehicle = (Vehicle)obj;
+		if(this.id == vehicle.id){
+			return true;
+		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode(){
-		//TODO
-		return -1;
+		return id;
 	}
 	
 	@Override
