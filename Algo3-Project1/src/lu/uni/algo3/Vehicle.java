@@ -3,10 +3,17 @@ package lu.uni.algo3;
 import java.util.Random;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
-import lu.uni.algo3.exceptions.SQLOutOfRangeException;
+import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
+	public enum Category{
+		HGV,
+		Car,
+		LGV,
+		Motorbike,
+		Other
+	}
 	private int id;
 	private String licencePlate;
 	private String transponder = null;
@@ -40,7 +47,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
 			this.id = indexer.getNewID(SQLType.Vehicle);
-		} catch (SQLOutOfRangeException e) {
+		} catch (OutOfRangeException e) {
 			System.err.println(e.getMessage());
 		}
 		this.licencePlate = licencePlate;

@@ -1,12 +1,12 @@
 package lu.uni.algo3.exceptions;
 
-public class SQLOutOfRangeException extends Exception {
+public class OutOfRangeException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1402668225814795581L;
-	public SQLOutOfRangeException(int id){
+	public OutOfRangeException(int id){
 		_message = "The index of " + id + " is out of range";
 	}
 	@Override

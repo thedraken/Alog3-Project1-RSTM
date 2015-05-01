@@ -3,12 +3,14 @@ package lu.uni.algo3;
 import java.awt.Point;
 import java.util.Calendar;
 import java.util.HashSet;
+
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.MissingVehicleException;
-import lu.uni.algo3.exceptions.SQLOutOfRangeException;
+import lu.uni.algo3.exceptions.OutOfRangeException;
+import lu.uni.algo3.utils.Utils;
 
 public class Camera {
-	public Camera(Point location, Type type) throws SQLOutOfRangeException{
+	public Camera(Point location, Type type) throws OutOfRangeException{
 		_id = SQLIndexer.getInstance().getNewID(SQLType.Camera);
 		this._type = type;
 		this._location = location;
@@ -29,8 +31,9 @@ public class Camera {
 		return this._location;
 	}
 	public boolean isWorking(){
-		//TODO implement method!
-		return true;
+		double value = Utils.returnRandomDouble(0, 100);
+		//We assume cameras will be broken 1% of the time
+		return (value > 0.01);
 	}
 	private Type _type;
 	public Type type(){
@@ -49,21 +52,18 @@ public class Camera {
 		return this._photosTaken;
 	}
 	public void capturePhoto() throws MissingVehicleException{
-		Vehicle vehicle;
+		//We'll take a photo for each and every car in the hashset of cars
 		if (_vehiclesNowPassing.size() <= 0)
-			throw new MissingVehicleException();
-		else{
-			//_vehiclesNowPassing.
-		}
+			return;
 		Calendar cal = Calendar.getInstance();
-		try {
-			//TODO Change method to use get random vehicle photographed
-			Photograph photo = new Photograph(this._id, cal.getTime(), new Vehicle());
-			_photosTaken.add(photo);
-		} catch (SQLOutOfRangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(Vehicle  v: _vehiclesNowPassing){
+			try {
+				Photograph p = new Photograph(this.iD(), cal.getTime(), v);
+				this._photosTaken.add(p);
+			} catch (OutOfRangeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 }

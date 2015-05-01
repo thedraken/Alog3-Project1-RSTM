@@ -1,6 +1,6 @@
 package lu.uni.algo3;
 
-import lu.uni.algo3.exceptions.SQLOutOfRangeException;
+import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class SQLIndexer {
 	private static SQLIndexer instance = null;
@@ -28,7 +28,7 @@ public class SQLIndexer {
 		Bill,
 		TollRecord
 	}
-	public int getNewID(SQLType type) throws SQLOutOfRangeException{
+	public int getNewID(SQLType type) throws OutOfRangeException{
 		switch(type){
 		case Bill:
 			return ++_billID;
@@ -45,6 +45,6 @@ public class SQLIndexer {
 		case Vehicle:
 			return ++_vehicleID;
 		}
-		throw new SQLOutOfRangeException(-1);
+		throw new OutOfRangeException(-1);
 	}
 }
