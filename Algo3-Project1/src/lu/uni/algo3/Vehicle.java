@@ -55,6 +55,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		// something like:
 		//int roadSectionNum = random.nextInt(Simulator.NUMROFROADS);
 		//this.currentPosition = ...
+		//also random direction (ex. increasing/decreasing, in respect to roadSection number...)
 
 	}
 	
