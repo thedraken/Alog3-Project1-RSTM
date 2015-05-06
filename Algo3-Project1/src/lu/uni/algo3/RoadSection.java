@@ -71,10 +71,12 @@ public class RoadSection implements Comparable<RoadSection> {
 		if (_listOfVehiclesInside.contains(v))
 			throw new ObjectExistsInHashSet();
 		_listOfVehiclesInside.add(v);
+		notifyObservers();
 	}
 	public synchronized boolean removeVehicle(Vehicle v){
 		if (_listOfVehiclesInside.contains(v)){
 			_listOfVehiclesInside.remove(v);
+			notifyObservers();
 			return true;
 		}
 		return false;
@@ -104,7 +106,7 @@ public class RoadSection implements Comparable<RoadSection> {
 	
 	public void notifyObservers(){
 		for(RoadSectionObserver obs : _listOfObservers)
-			obs.update(this);
+			obs.updateRS(this);
 	}
 	@Override
 	public boolean equals(Object o){
@@ -129,5 +131,10 @@ public class RoadSection implements Comparable<RoadSection> {
 	@Override
 	public int hashCode(){
 		return _number + hashCodeExtra;
+	}
+	
+	@Override
+	public String toString(){
+		return "Road section number: " + _number;
 	}
 }

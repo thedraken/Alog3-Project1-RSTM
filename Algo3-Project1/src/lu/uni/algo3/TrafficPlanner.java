@@ -6,7 +6,7 @@ import java.util.List;
 
 import lu.uni.algo3.Vehicle.Category;
 
-public class TrafficPlanner implements RoadSectionObserver{
+public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	
 	private HashSet<RoadSection> roadsToObserve;
 	
@@ -40,11 +40,33 @@ public class TrafficPlanner implements RoadSectionObserver{
 		List <Vehicle> vehiclesOfCategory = rs.getVehiclesByCategory(cat);
 		return ((vehiclesOfCategory.size() * 100) / rs.getOccupation());
 	}
+	
+	public void sendCongestionWarning(RoadSection rs){
+		if (rs.isBusy()){
+			System.out.println("Traffic on " + rs + " is congested !");
+			System.out.println("Traffic by category of vehicles:");
+			for (Category c : Category.values()){
+				System.out.println(c.toString() + ": " + getVehiclesPercentage(c, rs) + "%");
+			}
+		}
+	}
 
 	@Override
-	public void update(RoadSection rs) {
-		// TODO Auto-generated method stub
-		
+	public void updateRS(RoadSection rs) {
+		sendCongestionWarning(rs);
 	}
+
+	@Override
+	public void run() {
+		for (RoadSection rs : roadsToObserve){
+			sendCongestionWarning(rs);
+		}
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 }

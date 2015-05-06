@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public interface RoadSectionObserver {
 	
-	public void update(RoadSection rs);
+	public void updateRS(RoadSection rs);
 
 }
