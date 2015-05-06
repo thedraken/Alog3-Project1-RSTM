@@ -1,4 +1,6 @@
 package lu.uni.algo3.utils;
+
+import java.util.HashSet;
 import java.util.Random;
 
 public final class Utils {
