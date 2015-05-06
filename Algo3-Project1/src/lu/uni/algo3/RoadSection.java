@@ -17,7 +17,7 @@ public class RoadSection implements Comparable<RoadSection> {
 	private HashSet<Vehicle> _listOfVehiclesInside;
 	private boolean _roadContinutesAfterSection;
 	private Road _connectionToOtherRoad;
-	private HashSet<Observer> _listOfObservers;
+	private HashSet<RoadSectionObserver> _listOfObservers;
 	private int hashCodeExtra;
 	public RoadSection(int number, int speedLimit, int maxOccupation, Road connectionToOtherRoad){
 		baseRoadSection(number, speedLimit, maxOccupation);
@@ -34,7 +34,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		this._number = number;
 		this._speedLimit = speedLimit;
 		this._maxOccupation = maxOccupation;
-		this._listOfObservers = new HashSet<Observer>();
+		this._listOfObservers = new HashSet<RoadSectionObserver>();
 		this._listOfVehiclesInside = new HashSet<Vehicle>();
 		hashCodeExtra = Utils.returnRandomInt();
 	}
@@ -59,7 +59,7 @@ public class RoadSection implements Comparable<RoadSection> {
 	public Road connectionToOtherRoad(){
 		return this._connectionToOtherRoad;
 	}
-	public synchronized HashSet<Observer> listOfObservers(){
+	public synchronized HashSet<RoadSectionObserver> listOfObservers(){
 		return this._listOfObservers;
 	}
 	public int getOccupation(){
@@ -84,17 +84,27 @@ public class RoadSection implements Comparable<RoadSection> {
 	}
 	public boolean isBusy(){
 		//TODO What do we need to do here?
+		//depends on how should we consider a road to be busy:
+		//if the number of vehicles inside is greater than 1/2 the max occupation??
+		//return _listOfVehiclesInside.size() > _maxOccupation/2;
+		//something like that? should we use a synchronizedSet?
 		return false;
 	}
 	public boolean alreadyInside(Vehicle v){
 		return _listOfVehiclesInside.contains(v);
 	}
-	//TODO Register observers
-	//public void registerObserver(RoadSectionOb)
-	//public void removeObserver(RoadSectionObserver rso)
+	
+	public void registerObserver(RoadSectionObserver obs){
+		_listOfObservers.add(obs);
+	}
+	
+	public void removeObserver(RoadSectionObserver obs){
+		_listOfObservers.remove(obs);
+	}
+	
 	public void notifyObservers(){
-		for(Observer obs : _listOfObservers)
-			obs.update();
+		for(RoadSectionObserver obs : _listOfObservers)
+			obs.update(this);
 	}
 	@Override
 	public boolean equals(Object o){
