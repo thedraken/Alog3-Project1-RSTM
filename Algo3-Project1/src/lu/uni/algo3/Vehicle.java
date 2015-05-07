@@ -1,5 +1,6 @@
 package lu.uni.algo3;
 import java.util.Random;
+
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 
@@ -19,6 +20,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private RoadSection currentPosition;
 	private Random random;
 	boolean exitRoadMap = false;
+	private final String SIGNATURE = "Vehicle" + id + ": ";
 	// TODO listOfRecords
 	
 	//maximum time a vehicle takes to one roadSection to the next
@@ -46,7 +48,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		try {
 			this.id = indexer.getNewID(SQLType.Vehicle);
 		} catch (OutOfRangeException e) {
-			System.err.println(e.getMessage());
+			System.err.println(SIGNATURE + e.getMessage());
 		}
 		this.licencePlate = licencePlate;
 		this.category = category;
@@ -55,7 +57,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		// something like:
 		//int roadSectionNum = random.nextInt(Simulator.NUMROFROADS);
 		//this.currentPosition = ...
-		//also random direction (ex. increasing/decreasing, in respect to roadSection number...)
 
 	}
 	
@@ -163,5 +164,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public int compareTo(Vehicle v){
 		//TODO
 		return -1;
+	}
+	
+	@Override
+	public String toString(){
+		return "Vehicle" + id + " of catgory " + category.toString() + 
+				"currently driving on " + currentPosition;
 	}
 }

@@ -4,13 +4,24 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
+import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	
+	private int id;
 	private HashSet<RoadSection> roadsToObserve;
+	private final String SIGNATURE = "TP" + id + ": ";
 	
 	public TrafficPlanner(HashSet<RoadSection> roadsToObserve){
+		//SQLIndexer is responsible to increment and assign unique IDs
+		SQLIndexer indexer = SQLIndexer.getInstance();
+		try {
+			this.id = indexer.getNewID(SQLType.TrafficPlanner);
+		} catch (OutOfRangeException e) {
+			System.err.println(SIGNATURE + e.getMessage());
+		}
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
@@ -43,10 +54,10 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	
 	public void sendCongestionWarning(RoadSection rs){
 		if (rs.isBusy()){
-			System.out.println("Traffic on " + rs + " is congested !");
-			System.out.println("Traffic by category of vehicles:");
+			System.out.println(SIGNATURE + "Traffic on " + rs + " is congested !");
+			System.out.println(SIGNATURE + "Traffic by category of vehicles:");
 			for (Category c : Category.values()){
-				System.out.println(c.toString() + ": " + getVehiclesPercentage(c, rs) + "%");
+				System.out.println(SIGNATURE + c.toString() + ": " + getVehiclesPercentage(c, rs) + "%");
 			}
 		}
 	}
