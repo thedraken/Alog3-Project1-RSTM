@@ -1,8 +1,10 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
@@ -11,7 +13,7 @@ import lu.uni.algo3.exceptions.OutOfRangeException;
 public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	
 	private int id;
-	private HashSet<RoadSection> roadsToObserve;
+	private Set<RoadSection> roadsToObserve;
 	private final String SIGNATURE = "TP" + id + ": ";
 	
 	public TrafficPlanner(HashSet<RoadSection> roadsToObserve){
@@ -25,7 +27,7 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
-		this.roadsToObserve = roadsToObserve;
+		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
 	}
 	
 	public void addRoadSection(RoadSection r){
@@ -65,6 +67,12 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	@Override
 	public void updateRS(RoadSection rs) {
 		sendCongestionWarning(rs);
+		for (RoadSection r : roadsToObserve){
+			if (rs.number() == r.number()){
+				roadsToObserve.remove(r);
+				roadsToObserve.add(rs);
+			}
+		}
 	}
 
 	@Override

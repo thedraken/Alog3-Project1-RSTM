@@ -1,7 +1,9 @@
 package lu.uni.algo3;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
@@ -10,7 +12,7 @@ import lu.uni.algo3.exceptions.OutOfRangeException;
 public class RescueWorker implements Runnable, RoadSectionObserver{
 	
 	private int id;
-	private HashSet<RoadSection> roadsToObserve;
+	private Set<RoadSection> roadsToObserve;
 	private final String SIGNATURE = "RW" + id + ": ";
 	
 	public RescueWorker(HashSet<RoadSection> roadsToObserve){
@@ -24,7 +26,7 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
-		this.roadsToObserve = roadsToObserve;
+		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
 	}
 	
 	//traffic workers will check the traffic to get to an accident
@@ -66,7 +68,12 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 	public void updateRS(RoadSection rs) {
 		if (rs.isBusy())
 			System.out.println(SIGNATURE + "Attention! Traffic on " + rs + " is getting busy !");
-		
+		for (RoadSection r : roadsToObserve){
+			if (rs.number() == r.number()){
+				roadsToObserve.remove(r);
+				roadsToObserve.add(rs);
+			}
+		}
 	}
 
 	@Override
