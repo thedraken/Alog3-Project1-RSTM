@@ -2,11 +2,10 @@ package lu.uni.algo3;
 
 import java.util.HashSet;
 import java.util.List;
-
 import lu.uni.algo3.Predicates;
 import lu.uni.algo3.Vehicle.Category;
 import lu.uni.algo3.exceptions.ExceedMaxOccupation;
-import lu.uni.algo3.exceptions.ObjectExistsInHashSet;
+import lu.uni.algo3.exceptions.ObjectExistsInCollection;
 import lu.uni.algo3.utils.Utils;
 
 public class RoadSection implements Comparable<RoadSection> {
@@ -16,18 +15,18 @@ public class RoadSection implements Comparable<RoadSection> {
 	private int _tollRate;
 	private HashSet<Vehicle> _listOfVehiclesInside;
 	private boolean _roadContinutesAfterSection;
-	private Road _connectionToOtherRoad;
+	private HashSet<RoadSection> _connectionToOtherRoadSections;
 	private HashSet<RoadSectionObserver> _listOfObservers;
 	private int hashCodeExtra;
-	public RoadSection(int number, int speedLimit, int maxOccupation, Road connectionToOtherRoad){
+	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections){
 		baseRoadSection(number, speedLimit, maxOccupation);
-		this._connectionToOtherRoad = connectionToOtherRoad;
+		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
 		this._roadContinutesAfterSection = true;
 		
 	}
 	public RoadSection(int number, int speedLimit, int maxOccupation){
 		baseRoadSection(number, speedLimit, maxOccupation);
-		this._connectionToOtherRoad = null;
+		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
 	private void baseRoadSection(int number, int speedLimit, int maxOccupation){
@@ -56,8 +55,8 @@ public class RoadSection implements Comparable<RoadSection> {
 	public boolean roadContinutesAfterSection(){
 		return this._roadContinutesAfterSection;
 	}
-	public Road connectionToOtherRoad(){
-		return this._connectionToOtherRoad;
+	public synchronized HashSet<RoadSection> connectionToOtherRoadSections(){
+		return this._connectionToOtherRoadSections;
 	}
 	public synchronized HashSet<RoadSectionObserver> listOfObservers(){
 		return this._listOfObservers;
@@ -65,11 +64,11 @@ public class RoadSection implements Comparable<RoadSection> {
 	public int getOccupation(){
 		return this._listOfVehiclesInside.size();
 	}
-	public synchronized void insertVehicle(Vehicle v) throws ExceedMaxOccupation, ObjectExistsInHashSet{
+	public synchronized void insertVehicle(Vehicle v) throws ExceedMaxOccupation, ObjectExistsInCollection{
 		if (_listOfVehiclesInside.size() +1 > _maxOccupation)
 			throw new ExceedMaxOccupation(_listOfVehiclesInside.size(), maxOccupation(), 1);
 		if (_listOfVehiclesInside.contains(v))
-			throw new ObjectExistsInHashSet();
+			throw new ObjectExistsInCollection();
 		_listOfVehiclesInside.add(v);
 		notifyObservers();
 	}
@@ -92,15 +91,15 @@ public class RoadSection implements Comparable<RoadSection> {
 		//something like that? should we use a synchronizedSet?
 		return false;
 	}
-	public boolean alreadyInside(Vehicle v){
+	public synchronized boolean alreadyInside(Vehicle v){
 		return _listOfVehiclesInside.contains(v);
 	}
 	
-	public void registerObserver(RoadSectionObserver obs){
+	public synchronized void registerObserver(RoadSectionObserver obs){
 		_listOfObservers.add(obs);
 	}
 	
-	public void removeObserver(RoadSectionObserver obs){
+	public synchronized void removeObserver(RoadSectionObserver obs){
 		_listOfObservers.remove(obs);
 	}
 	

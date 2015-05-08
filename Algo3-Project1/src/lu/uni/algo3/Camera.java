@@ -1,16 +1,13 @@
 package lu.uni.algo3;
-
-import java.awt.Point;
 import java.util.Calendar;
 import java.util.HashSet;
-
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.MissingVehicleException;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
 
 public class Camera {
-	public Camera(Point location, Type type) throws OutOfRangeException{
+	public Camera(RoadSection location, Type type) throws OutOfRangeException{
 		_id = SQLIndexer.getInstance().getNewID(SQLType.Camera);
 		this._type = type;
 		this._location = location;
@@ -26,8 +23,8 @@ public class Camera {
 	public int iD(){
 		return this._id;
 	}
-	private Point _location;
-	public Point location(){
+	private RoadSection _location;
+	public RoadSection location(){
 		return this._location;
 	}
 	public boolean isWorking(){
