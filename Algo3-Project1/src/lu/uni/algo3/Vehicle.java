@@ -55,7 +55,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		random = new Random();
 		// TODO implement random selection of starting point for vehicle
 		// something like:
-		//int roadSectionNum = random.nextInt(Simulator.NUMROFROADS);
+		//int roadSectionNum = random.nextInt(Simulator.NUMROFROADSECTIONS);
 		//this.currentPosition = ...
 
 	}
