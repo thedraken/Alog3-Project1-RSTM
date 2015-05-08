@@ -18,4 +18,7 @@ public final class Utils {
 	public static int returnRandomInt(int min, int max){
 		 return rnd.nextInt((max - min) + 1) + min;
 	}
+	public static boolean returnRandomBoolean(double probability){
+		return rnd.nextDouble() <= probability;
+	}
 }

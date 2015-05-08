@@ -1,8 +1,11 @@
 package lu.uni.algo3;
-import java.util.Random;
+import java.util.Iterator;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
+import lu.uni.algo3.exceptions.ExceedMaxOccupation;
+import lu.uni.algo3.exceptions.ObjectExistsInCollection;
 import lu.uni.algo3.exceptions.OutOfRangeException;
+import lu.uni.algo3.utils.Utils;
 
 public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
@@ -13,18 +16,22 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		Motorbike,
 		Other
 	}
+	public enum Direction{
+		ascending,
+		descending
+	}
 	private int id;
 	private String licencePlate;
 	private String transponder = null;
 	private Category category;
 	private RoadSection currentPosition;
-	private Random random;
+	private Direction direction;
 	boolean exitRoadMap = false;
 	private final String SIGNATURE = "Vehicle" + id + ": ";
 	// TODO listOfRecords
 	
-	//maximum time a vehicle takes to one roadSection to the next
-	//should this be here on in the simulator?
+	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
+	private static final int MINCARWAITTIME = 1000;
 	private static final int MAXCARWAITTIME = 10000;
 	
 	/*suggestion for SQLIndexer singleton:
@@ -42,7 +49,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	}
 	 */
 
-	public Vehicle(String licencePlate, Category category){
+	public Vehicle(String licencePlate, Category category) {
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -52,12 +59,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		}
 		this.licencePlate = licencePlate;
 		this.category = category;
-		random = new Random();
-		// TODO implement random selection of starting point for vehicle
-		// something like:
-		//int roadSectionNum = random.nextInt(Simulator.NUMROFROADSECTIONS);
-		//this.currentPosition = ...
-
 	}
 	
 	public int getID(){
@@ -85,48 +86,139 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 
 	@Override
 	public void run() {
-		// TODO implement run()
+		//enter roadMap
+		// random selection of starting point for vehicle
+		int roadSectionNum = Utils.returnRandomInt(1, Simulator.NUMBEROFROADSECTIONS);
+		for (Road r : Simulator.roadMap){
+			for (RoadSection rs : r.listOfRoadSections()){
+				if (rs.number() == roadSectionNum){
+					try {
+						rs.insertVehicle(this);
+						this.currentPosition = rs;
+					} catch (ExceedMaxOccupation e) {
+						System.err.println(SIGNATURE + e.getMessage());
+					} catch (ObjectExistsInCollection e) {
+						System.err.println(SIGNATURE + e.getMessage());
+					}
+				}
+			}
+		}
+		
+		//random selection of the direction the vehicle will take
+		boolean asc = Utils.returnRandomBoolean(0.5);
+		if (asc){
+			this.direction = Direction.ascending;
+		}
+		else{
+			this.direction = Direction.descending;
+		}
 		
 		while(!exitRoadMap){
-			//enter roadSection
-			//...
 			
 			//move and simulate different random speeds
 			try {
-				Thread.sleep(random.nextInt(MAXCARWAITTIME));
+				Thread.sleep(Utils.returnRandomInt(MINCARWAITTIME, MAXCARWAITTIME));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			//leave roadSection 
-			//to next roadSection or leave Road (to other Road or not)
+			//to next roadSection on same road or leave Road (to other Road or out of the map)
 			endOfRoadSectionBehavior();
-			//...
 		}	
 	}
 	
 	public void endOfRoadSectionBehavior(){
-		// TODO
+		// TODO check
+		int behavior = 2;
 		//the behavior of the vehicle is randomly generated
-		int behavior = random.nextInt(3);
+		//the vehicle has 60% probability of staying on the same road
+		if (Utils.returnRandomBoolean(0.6)){
+			behavior = 0;
+		}
+		else {
+			//if leaving the current road, he will have 70% probability of changing to another road, if there is one
+			if (Utils.returnRandomBoolean(0.7)){
+				behavior = 1;
+			}
+		}
+	
+		RoadSection currentRS;
+		RoadSection nextRS = null;
+		boolean success = false;
 		
 		switch (behavior) {
 			//case 0: the vehicle continues to the next road section of this road, if there exists one
 			//if not try next case
 			case 0:
-//				if(currentPosition.RoadContinuesAfterSection){
-//					currentPosition = currentPosition.nextRoadSection;
-//					break;
-//				}
+				for (Road r : Simulator.roadMap){
+					Iterator<RoadSection> it; 
+					//shit! maybe we need an hashSet afterall...
+//					if (direction.equals(Direction.ascending)){
+						it = r.listOfRoadSections().iterator();
+//					}
+//					else{
+//						it = new DescendingIterator<RoadSection>(r.listOfRoadSections);
+//					}
+					while(it.hasNext()){
+						currentRS = it.next();
+						if (currentRS.equals(currentPosition) && it.hasNext()){
+							currentRS.removeVehicle(this);
+							nextRS = it.next();
+							try {
+								nextRS.insertVehicle(this);
+								currentPosition = nextRS;
+							} catch (ExceedMaxOccupation e) {
+								System.err.println(SIGNATURE + e.getMessage());
+							} catch (ObjectExistsInCollection e) {
+								System.err.println(SIGNATURE + e.getMessage());
+							}
+							success = true;
+						}
+					}
+					if (success){
+						break;
+					}
+				}
+				if (success){
+					break;
+				}
+				
 			//case 1: the vehicle changes road, updating its position to the roadSection of the other road
 			//that has a connection to this one
 			//if no connection to other road exits, we try the next case
 			case 1:
-//				if(currentPosition.hasConectionToOtherRoad){
-//					currentPosition = currentPosition.otherRoad;
-//					break;
-//				}
+				for (Road r : Simulator.roadMap){
+					Iterator<RoadSection> it = r.listOfRoadSections().iterator();
+					while(it.hasNext()){
+						currentRS = it.next();
+						if (currentRS.equals(currentPosition) && !currentRS.connectionToOtherRoadSections().isEmpty()){
+							//currentRS know references the same object so the roadSection in the Simulator.roadMap will be changed, right...?
+							currentRS.removeVehicle(this);
+							//since the order of access to HashSet elements is not guaranteed, this will be kind of a random choice
+							for (RoadSection rs : currentRS.connectionToOtherRoadSections()){
+								nextRS = rs;
+								break;
+							}
+							try {
+								nextRS.insertVehicle(this);
+								currentPosition = nextRS;
+							} catch (ExceedMaxOccupation e) {
+								System.err.println(SIGNATURE + e.getMessage());
+							} catch (ObjectExistsInCollection e) {
+								System.err.println(SIGNATURE + e.getMessage());
+							}
+							success = true;
+						}
+					}
+					if (success){
+						break;
+					}
+				}
+				if (success){
+					break;
+				}
 			//case 2 and default: the vehicle exits the road map - the thread finishes its execution
 			case 2: default:
 				exitRoadMap = true;
