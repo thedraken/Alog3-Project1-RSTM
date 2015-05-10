@@ -1,48 +1,53 @@
 package lu.uni.algo3;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class TollRecord {
 	
-	private int id;
-	private Vehicle vehicle;
-	private RoadSection entry;
-	private Date entryTime;
-	private RoadSection exit;
-	private Date exitTime;
+	private int _id;
+	private Vehicle _vehicle;
+	private RoadSection _entry;
+	private Date _entryTime;
+	private RoadSection _exit;
+	private Date _exitTime;
 	
-	public TollRecord(Vehicle vehicle, RoadSection entry, Date entryTime){
-		this.vehicle = vehicle;
-		this.entry = entry;
-		this.entryTime = entryTime;
+	public TollRecord(Vehicle vehicle, RoadSection entry){
+		this._vehicle = vehicle;
+		_entryTime = Calendar.getInstance().getTime();
+		_exit = null;
+		_exitTime = null;
 	}
-	
-	public Vehicle getVehicle(){
-		return vehicle;
+	public int ID(){
+		return _id;
 	}
-	
-	public RoadSection getEntry(){
-		return entry;
+	public Vehicle Vehicle(){
+		return _vehicle;
+	}	
+	public RoadSection Entry(){
+		return _entry;
 	}
-	
-	public Date getEntryTime(){
-		return entryTime;
+	public Date EntryTime(){
+		return _entryTime;
 	}
-	
-	public RoadSection getExit(){
-		return exit;
+	public RoadSection Exit(){
+		return _exit;
 	}
-	
-	public void setExit(RoadSection exit){
-		this.exit = exit;
+	public Date ExitTime(){
+		return _exitTime;
 	}
-	
-	public Date getExitTime(){
-		return exitTime;
+	public void closeRecord(RoadSection exit){
+		this._exitTime = Calendar.getInstance().getTime();
+		this._exit = exit;
 	}
-	
-	public void setExitTime(Date exitTime){
-		this.exitTime = exitTime;
+	@Override
+	public synchronized boolean equals(Object o){
+		if (!(o instanceof TollRecord))
+			return false;
+		TollRecord tr = (TollRecord)o;
+		if (tr.ID() != this._id)
+			return false;
+		//TODO finish off equal implementation
+		return true;
 	}
-
 }

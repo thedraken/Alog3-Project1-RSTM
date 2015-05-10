@@ -93,15 +93,12 @@ public class RoadSection implements Comparable<RoadSection> {
 	public synchronized boolean alreadyInside(Vehicle v){
 		return _listOfVehiclesInside.contains(v);
 	}
-	
 	public synchronized void registerObserver(RoadSectionObserver obs){
 		_listOfObservers.add(obs);
 	}
-	
 	public synchronized void removeObserver(RoadSectionObserver obs){
 		_listOfObservers.remove(obs);
 	}
-	
 	public void notifyObservers(){
 		for(RoadSectionObserver obs : _listOfObservers)
 			obs.updateRS(this);
@@ -131,13 +128,16 @@ public class RoadSection implements Comparable<RoadSection> {
 			return -1;
 		if (_number > o.number())
 			return 1;
+		if (this.hashCode() > o.hashCode())
+			return 1;
+		if (this.hashCode() < o.hashCode())
+			return -1;
 		return 0;
 	}
 	@Override
 	public int hashCode(){
 		return _number + hashCodeExtra;
 	}
-	
 	@Override
 	public String toString(){
 		return "Road section number: " + _number;

@@ -6,11 +6,11 @@ import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class Photograph {
-	public Photograph(int cameraID, Date dateTimeCaptured, Vehicle vehicle) throws OutOfRangeException{
+	public Photograph(int cameraID, Date dateTimeCaptured) throws OutOfRangeException{
 		_iD = SQLIndexer.getInstance().getNewID(SQLType.Photograph);
 		this._dateTimeCaptured = dateTimeCaptured;
 		this._locationOnDisk = "/photograph/Camera" + cameraID + "/Photo" + _iD + ".jpg";
-		this._vehicle = vehicle;
+		//this._vehicle = vehicle;
 	}
 	private int _iD;
 	public int iD(){
@@ -21,11 +21,14 @@ public class Photograph {
 		return this._dateTimeCaptured;
 	}
 	private String _locationOnDisk;
-	public String locationOnDiks(){
+	public String locationOnDisk(){
 		return this._locationOnDisk;
 	}
 	private Vehicle _vehicle;
 	public Vehicle vehicle(){
 		return this._vehicle;
+	}
+	public void setVehicle(Vehicle v){
+		this._vehicle = v;
 	}
 }

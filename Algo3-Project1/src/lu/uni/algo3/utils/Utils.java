@@ -1,4 +1,7 @@
 package lu.uni.algo3.utils;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public final class Utils {
@@ -20,5 +23,8 @@ public final class Utils {
 	}
 	public static boolean returnRandomBoolean(double probability){
 		return rnd.nextDouble() <= probability;
+	}
+	public static List<?> hashSetToArrayList(HashSet<?> hshSt){
+		return Arrays.asList(hshSt.toArray());
 	}
 }
