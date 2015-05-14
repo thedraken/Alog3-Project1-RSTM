@@ -1,10 +1,12 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.TollIsNotCompleteException;
 import lu.uni.algo3.utils.Utils;
 
@@ -17,6 +19,7 @@ public class TollRecord implements Comparable<TollRecord> {
 	private DateTime _exitTime;
 	private boolean hasExited = false;
 	private int _hashExtra;
+	private HashSet<TollRecordObserver> hshstTollRecordObserver;
 	public TollRecord(Vehicle vehicle, Camera entry){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
@@ -58,6 +61,26 @@ public class TollRecord implements Comparable<TollRecord> {
 		Interval i = new Interval(this.EntryTime(), this.ExitTime());
 		_bill = new Bill(totalDistanceTravelled, i);
 	}
+	public boolean speedViolation(){
+		//TODO implement method
+		return false;
+	}
+	public synchronized void registerObserver(TollRecordObserver tro) throws ObjectExistsInCollectionException{
+		if (hshstTollRecordObserver == null)
+			hshstTollRecordObserver = new HashSet<TollRecordObserver>();
+		if (hshstTollRecordObserver.contains(tro))
+			throw new ObjectExistsInCollectionException();
+		hshstTollRecordObserver.add(tro);
+	}
+	public synchronized void removeObserver(TollRecordObserver tro){
+		if (hshstTollRecordObserver.contains(tro))
+			hshstTollRecordObserver.remove(tro);
+	}
+	public synchronized void notifyObservers(){
+		for(TollRecordObserver tro: hshstTollRecordObserver){
+			tro.notify();
+		}
+	}
 	@Override
 	public boolean equals(Object o){
 		if (!(o instanceof TollRecord))
@@ -69,7 +92,10 @@ public class TollRecord implements Comparable<TollRecord> {
 			return false;
 		if (this.Vehicle() != tr.Vehicle())
 			return false;
-		//TODO finish implementation
+		if (this.EntryTime() != tr.EntryTime())
+			return false;
+		if (this.ExitTime() != tr.ExitTime())
+			return false;
 		return true;
 	}
 	@Override
@@ -78,7 +104,10 @@ public class TollRecord implements Comparable<TollRecord> {
 	}
 	@Override
 	public int compareTo(TollRecord o) {
-		// TODO Auto-generated method stub
+		if (this.ID() > o.ID())
+			return -1;
+		if (this.ID() < o.ID())
+			return 1;
 		return 0;
 	}
 }
