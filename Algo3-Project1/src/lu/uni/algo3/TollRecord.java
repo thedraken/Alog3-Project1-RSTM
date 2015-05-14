@@ -1,21 +1,24 @@
 package lu.uni.algo3;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import lu.uni.algo3.exceptions.TollIsNotCompleteException;
+
 public class TollRecord {
-	
+	private Bill _bill;
 	private int _id;
 	private Vehicle _vehicle;
-	private RoadSection _entry;
-	private Date _entryTime;
-	private RoadSection _exit;
-	private Date _exitTime;
-	
-	public TollRecord(Vehicle vehicle, RoadSection entry){
+	private ArrayList<RoadSection> _listOfRoadSectionsTravelled;
+	private Calendar _entryTime;
+	private Calendar _exitTime;
+	private boolean hasExited = false;
+	public TollRecord(Vehicle vehicle, Camera entry){
 		this._vehicle = vehicle;
-		_entryTime = Calendar.getInstance().getTime();
-		_exit = null;
+		_entryTime = Calendar.getInstance();
+		_listOfRoadSectionsTravelled = new ArrayList<RoadSection>();
+		_listOfRoadSectionsTravelled.add(entry.location());
 		_exitTime = null;
 	}
 	public int ID(){
@@ -24,21 +27,26 @@ public class TollRecord {
 	public Vehicle Vehicle(){
 		return _vehicle;
 	}	
-	public RoadSection Entry(){
-		return _entry;
-	}
-	public Date EntryTime(){
+	public Calendar EntryTime(){
 		return _entryTime;
 	}
-	public RoadSection Exit(){
-		return _exit;
-	}
-	public Date ExitTime(){
+	public Calendar ExitTime(){
 		return _exitTime;
 	}
-	public void closeRecord(RoadSection exit){
-		this._exitTime = Calendar.getInstance().getTime();
-		this._exit = exit;
+	public synchronized ArrayList<RoadSection> ListOfRoadSectionsTravelled(){
+		return this._listOfRoadSectionsTravelled;
+	}
+	
+	public void setExit(Camera exit){
+		this._exitTime = Calendar.getInstance();
+		this._listOfRoadSectionsTravelled.add(exit.location());
+		hasExited = true;
+	}
+	public void generateBill() throws TollIsNotCompleteException{
+		if (!hasExited)
+			throw new TollIsNotCompleteException(this._id, this._vehicle);
+		
+		//_bill = new Bill(, timeSpentOnRoad)
 	}
 	@Override
 	public synchronized boolean equals(Object o){

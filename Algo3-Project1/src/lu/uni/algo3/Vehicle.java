@@ -2,8 +2,8 @@ package lu.uni.algo3;
 import java.util.Iterator;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
-import lu.uni.algo3.exceptions.ExceedMaxOccupation;
-import lu.uni.algo3.exceptions.ObjectExistsInCollection;
+import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
+import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
 
@@ -95,9 +95,9 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					try {
 						rs.insertVehicle(this);
 						this.currentPosition = rs;
-					} catch (ExceedMaxOccupation e) {
+					} catch (ExceedMaxOccupationException e) {
 						System.err.println(SIGNATURE + e.getMessage());
-					} catch (ObjectExistsInCollection e) {
+					} catch (ObjectExistsInCollectionException e) {
 						System.err.println(SIGNATURE + e.getMessage());
 					}
 				}
@@ -169,9 +169,9 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 							try {
 								nextRS.insertVehicle(this);
 								currentPosition = nextRS;
-							} catch (ExceedMaxOccupation e) {
+							} catch (ExceedMaxOccupationException e) {
 								System.err.println(SIGNATURE + e.getMessage());
-							} catch (ObjectExistsInCollection e) {
+							} catch (ObjectExistsInCollectionException e) {
 								System.err.println(SIGNATURE + e.getMessage());
 							}
 							success = true;
@@ -204,9 +204,9 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 							try {
 								nextRS.insertVehicle(this);
 								currentPosition = nextRS;
-							} catch (ExceedMaxOccupation e) {
+							} catch (ExceedMaxOccupationException e) {
 								System.err.println(SIGNATURE + e.getMessage());
-							} catch (ObjectExistsInCollection e) {
+							} catch (ObjectExistsInCollectionException e) {
 								System.err.println(SIGNATURE + e.getMessage());
 							}
 							success = true;

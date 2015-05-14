@@ -3,19 +3,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+
 import lu.uni.algo3.SQLIndexer.SQLType;
-import lu.uni.algo3.exceptions.ExceedMaxOccupation;
-import lu.uni.algo3.exceptions.MissingTollRecord;
-import lu.uni.algo3.exceptions.ObjectExistsInCollection;
+import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
+import lu.uni.algo3.exceptions.MissingTollRecordException;
+import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
 
-public class Camera {
+public class Camera implements Comparable<Camera> {
 	public Camera(RoadSection location, Type type) throws OutOfRangeException{
 		_id = SQLIndexer.getInstance().getNewID(SQLType.Camera);
 		this._type = type;
 		this._location = location;
 		this._photosTaken = new HashSet<Photograph>();
+		hashCodeExtra = Utils.returnRandomInt();
 	}
 	public enum Type{
 		RoadEntry,
@@ -26,6 +28,7 @@ public class Camera {
 	public int iD(){
 		return this._id;
 	}
+	private int hashCodeExtra;
 	private RoadSection _location;
 	public RoadSection location(){
 		return this._location;
@@ -70,36 +73,60 @@ public class Camera {
 		}
 		return false;
 	}
-	public synchronized void updateRoadOccupation(Vehicle v){
+	public synchronized void updateRoadOccupation(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
 		if (!this._location.alreadyInside(v))
-			try {
-				this._location.insertVehicle(v);
-			} catch (ExceedMaxOccupation | ObjectExistsInCollection e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this._location.insertVehicle(v);
 	}
 	public void displayWarning(String s){
 		this._warningMessage = s;
+		System.out.println("Camera " + this._id + " has reported a warning: " + s);
 	}
 	public synchronized TollRecord createTollRecord(Vehicle v){
-		TollRecord tr =  new TollRecord(v, this._location);
+		TollRecord tr =  new TollRecord(v, this);
 		openTollRecords.add(tr);
 		return tr;
 	}
-	public synchronized TollRecord closeTollRecord(Vehicle v) throws MissingTollRecord{
+	public synchronized TollRecord closeTollRecord(Vehicle v) throws MissingTollRecordException{
 		//TODO should we store the list of open toll records against the vehicle or camera
 		if (openTollRecords.size() > 0){
 			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehilce(v));
 			if (listOfTolls.size() > 0){
 				TollRecord tr = listOfTolls.get(0);
-				tr.closeRecord(this._location);
+				tr.setExit(this);
 				openTollRecords.remove(tr);
 				return tr;
 			}
-			throw new MissingTollRecord(v, this);
+			throw new MissingTollRecordException(v, this);
 		}
-		throw new MissingTollRecord(v, this);
+		throw new MissingTollRecordException(v, this);
 	}
 	private ArrayList<TollRecord> openTollRecords = new ArrayList<TollRecord>();
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof Camera))
+			return false;
+		Camera c = (Camera)o;
+		if (c.iD() != this._id)
+			return false;
+		if (c.hashCode() != this.hashCode())
+			return false;
+		if (c.location() != this._location)
+			return false;
+		if (c.type() != this._type)
+			return false;
+		return true;
+		
+	}
+	@Override
+	public int hashCode(){
+		return this._id + this.hashCodeExtra;
+	}
+	@Override
+	public int compareTo(Camera c){
+		if (c.iD() > this.iD())
+			return 1;
+		if (c.iD() < this.iD())
+			return -1;
+		return 0;
+	}
 }

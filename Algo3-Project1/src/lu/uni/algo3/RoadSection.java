@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import lu.uni.algo3.Predicates;
 import lu.uni.algo3.Vehicle.Category;
-import lu.uni.algo3.exceptions.ExceedMaxOccupation;
-import lu.uni.algo3.exceptions.ObjectExistsInCollection;
+import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
+import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.utils.Utils;
 
 public class RoadSection implements Comparable<RoadSection> {
@@ -18,6 +18,7 @@ public class RoadSection implements Comparable<RoadSection> {
 	private HashSet<RoadSection> _connectionToOtherRoadSections;
 	private HashSet<RoadSectionObserver> _listOfObservers;
 	private int hashCodeExtra;
+	private double _distance;
 	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections){
 		baseRoadSection(number, speedLimit, maxOccupation);
 		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
@@ -49,6 +50,9 @@ public class RoadSection implements Comparable<RoadSection> {
 	public int tollRate(){
 		return this._tollRate;
 	}
+	public double distance(){
+		return this._distance;
+	}
 	public synchronized  HashSet<Vehicle> getAllVehiclesInside(){
 		return this._listOfVehiclesInside;
 	}
@@ -64,11 +68,11 @@ public class RoadSection implements Comparable<RoadSection> {
 	public int getOccupation(){
 		return this._listOfVehiclesInside.size();
 	}
-	public synchronized void insertVehicle(Vehicle v) throws ExceedMaxOccupation, ObjectExistsInCollection{
+	public synchronized void insertVehicle(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
 		if (_listOfVehiclesInside.size() +1 > _maxOccupation)
-			throw new ExceedMaxOccupation(_listOfVehiclesInside.size(), maxOccupation(), 1);
+			throw new ExceedMaxOccupationException(_listOfVehiclesInside.size(), maxOccupation(), 1);
 		if (_listOfVehiclesInside.contains(v))
-			throw new ObjectExistsInCollection();
+			throw new ObjectExistsInCollectionException();
 		_listOfVehiclesInside.add(v);
 		notifyObservers();
 	}

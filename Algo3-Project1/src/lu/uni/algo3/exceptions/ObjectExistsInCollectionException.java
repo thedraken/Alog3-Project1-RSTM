@@ -1,6 +1,6 @@
 package lu.uni.algo3.exceptions;
 
-public class ObjectExistsInCollection extends Exception {
+public class ObjectExistsInCollectionException extends Exception {
 	/**
 	 * 
 	 */

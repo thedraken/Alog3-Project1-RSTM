@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
-import lu.uni.algo3.exceptions.ObjectExistsInCollection;
+import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class Road {
@@ -30,9 +30,9 @@ public class Road {
 	public String name(){
 		return this._name;
 	}
-	public synchronized void insertRoadSection(RoadSection rs) throws ObjectExistsInCollection{
+	public synchronized void insertRoadSection(RoadSection rs) throws ObjectExistsInCollectionException{
 		if (_listOfRoadSections.contains(rs))
-			throw new ObjectExistsInCollection();
+			throw new ObjectExistsInCollectionException();
 		_listOfRoadSections.add(rs);
 	}
 	public synchronized boolean removeRoadSection(RoadSection rs){
