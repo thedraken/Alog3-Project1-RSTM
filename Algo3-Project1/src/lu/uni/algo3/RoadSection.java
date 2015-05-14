@@ -19,24 +19,25 @@ public class RoadSection implements Comparable<RoadSection> {
 	private HashSet<RoadSectionObserver> _listOfObservers;
 	private int hashCodeExtra;
 	private double _distance;
-	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections){
-		baseRoadSection(number, speedLimit, maxOccupation);
+	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection){
+		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection);
 		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
 		this._roadContinutesAfterSection = true;
 		
 	}
-	public RoadSection(int number, int speedLimit, int maxOccupation){
-		baseRoadSection(number, speedLimit, maxOccupation);
+	public RoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection){
+		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection);
 		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
-	private void baseRoadSection(int number, int speedLimit, int maxOccupation){
+	private void baseRoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection){
 		this._number = number;
 		this._speedLimit = speedLimit;
 		this._maxOccupation = maxOccupation;
 		this._listOfObservers = new HashSet<RoadSectionObserver>();
 		this._listOfVehiclesInside = new HashSet<Vehicle>();
 		hashCodeExtra = Utils.returnRandomInt();
+		this._distance = distanceOfRoadSection;
 	}
 	public int number(){
 		return this._number;
