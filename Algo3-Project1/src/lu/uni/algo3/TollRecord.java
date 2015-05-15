@@ -14,17 +14,17 @@ public class TollRecord implements Comparable<TollRecord> {
 	private Bill _bill;
 	private int _id;
 	private Vehicle _vehicle;
-	private ArrayList<RoadSection> _listOfRoadSectionsTravelled;
+	private ArrayList<VehicleJourney> _listOfJourneys;
 	private DateTime _entryTime;
 	private DateTime _exitTime;
 	private boolean hasExited = false;
 	private int _hashExtra;
 	private HashSet<TollRecordObserver> hshstTollRecordObserver;
-	public TollRecord(Vehicle vehicle, Camera entry){
+	public TollRecord(Vehicle vehicle, Camera entry, DateTime dateTimePassedCamera){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
-		_listOfRoadSectionsTravelled = new ArrayList<RoadSection>();
-		_listOfRoadSectionsTravelled.add(entry.location());
+		_listOfJourneys = new ArrayList<VehicleJourney>();
+		_listOfJourneys.add(new VehicleJourney(entry.location(), dateTimePassedCamera));
 		_exitTime = null;
 		_hashExtra = Utils.returnRandomInt(); 
 	}
@@ -40,30 +40,46 @@ public class TollRecord implements Comparable<TollRecord> {
 	public DateTime ExitTime(){
 		return _exitTime;
 	}
-	public synchronized void addRoadSection(Camera c){
+	public synchronized void addRoadSection(Camera c, DateTime dateTimePassedCamera){
 		if (!hasExited)
-			_listOfRoadSectionsTravelled.add(c.location());
+			_listOfJourneys.add(new VehicleJourney(c.location(), dateTimePassedCamera));
 	}
-	public synchronized ArrayList<RoadSection> ListOfRoadSectionsTravelled(){
-		return this._listOfRoadSectionsTravelled;
+	public synchronized ArrayList<VehicleJourney> ListOfVehicleJourneys(){
+		return this._listOfJourneys;
 	}
-	public synchronized void setExit(Camera exit){
+	public synchronized void setExit(Camera exit, DateTime dateTimePassedCamera){
 		this._exitTime = new DateTime();
-		this._listOfRoadSectionsTravelled.add(exit.location());
+		this._listOfJourneys.add(new VehicleJourney(exit.location(), dateTimePassedCamera));
 		hasExited = true;
 	}
-	public void generateBill() throws TollIsNotCompleteException{
+	public Bill generateBill() throws TollIsNotCompleteException{
 		if (!hasExited)
 			throw new TollIsNotCompleteException(this._id, this._vehicle);
-		double totalDistanceTravelled = 0;
-		for(RoadSection rs : ListOfRoadSectionsTravelled())
-			totalDistanceTravelled+= rs.distance();
-		Interval i = new Interval(this.EntryTime(), this.ExitTime());
-		_bill = new Bill(totalDistanceTravelled, i);
+		if (_bill == null){
+			double totalDistanceTravelled = 0;
+			for(VehicleJourney vj : ListOfVehicleJourneys())
+				totalDistanceTravelled+= vj.RoadSectionTravelled().distance();
+			Interval i = new Interval(this.EntryTime(), this.ExitTime());
+			_bill = new Bill(totalDistanceTravelled, i);
+		}
+		return _bill;
 	}
 	public boolean speedViolation(){
-		//TODO implement method
+		DateTime firstDate = null;
+		DateTime secondDate;
+		for(VehicleJourney vj: ListOfVehicleJourneys()){
+			secondDate = vj.DateTimePassedCamera();
+			if (firstDate != null){
+				Interval i = new Interval(firstDate, secondDate);
+				long milliseconds = i.toDurationMillis();
+				double hours = milliseconds / (1000.0 * 60.0 * 60.0);
+				if (vj.RoadSectionTravelled().distance() / hours > vj.RoadSectionTravelled().speedLimit())
+					return true;
+			}
+			firstDate = vj.DateTimePassedCamera();
+		}
 		return false;
+		
 	}
 	public synchronized void registerObserver(TollRecordObserver tro) throws ObjectExistsInCollectionException{
 		if (hshstTollRecordObserver == null)

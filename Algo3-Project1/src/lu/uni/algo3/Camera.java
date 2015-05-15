@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
 import lu.uni.algo3.exceptions.MissingTollRecordException;
@@ -82,7 +84,7 @@ public class Camera implements Comparable<Camera> {
 		System.out.println("Camera " + this._id + " has reported a warning: " + s);
 	}
 	public synchronized TollRecord createTollRecord(Vehicle v){
-		TollRecord tr =  new TollRecord(v, this);
+		TollRecord tr =  new TollRecord(v, this, new DateTime());
 		openTollRecords.add(tr);
 		return tr;
 	}
@@ -92,7 +94,7 @@ public class Camera implements Comparable<Camera> {
 			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehilce(v));
 			if (listOfTolls.size() > 0){
 				TollRecord tr = listOfTolls.get(0);
-				tr.setExit(this);
+				tr.setExit(this, new DateTime());
 				openTollRecords.remove(tr);
 				return tr;
 			}
@@ -115,7 +117,6 @@ public class Camera implements Comparable<Camera> {
 		if (c.type() != this._type)
 			return false;
 		return true;
-		
 	}
 	@Override
 	public int hashCode(){
