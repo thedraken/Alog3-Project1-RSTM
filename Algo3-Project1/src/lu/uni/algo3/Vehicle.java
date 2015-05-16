@@ -97,7 +97,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					RoadSection rs = list.get(0);
 					rs.insertVehicle(this);
 					this.currentPosition = rs;
-					System.out.println("Car " + this.id + " is entering road " + r.name() +" at section "+ rs.number());
+					System.out.println(SIGNATURE + "Entering road " + r.name() +" at section "+ rs.number());
 				} catch (ExceedMaxOccupationException e) {
 					System.err.println(SIGNATURE + e.getMessage());
 				} catch (ObjectExistsInCollectionException e) {
