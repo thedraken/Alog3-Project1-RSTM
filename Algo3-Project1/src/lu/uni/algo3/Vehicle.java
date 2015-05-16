@@ -1,5 +1,6 @@
 package lu.uni.algo3;
 import java.util.Iterator;
+import java.util.List;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
@@ -90,18 +91,26 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		// random selection of starting point for vehicle
 		int roadSectionNum = Utils.returnRandomInt(1, Simulator.NUMBEROFROADSECTIONS);
 		for (Road r : Simulator.roadMap){
-			for (RoadSection rs : r.listOfRoadSections()){
-				if (rs.number() == roadSectionNum){
-					try {
-						rs.insertVehicle(this);
-						this.currentPosition = rs;
-					} catch (ExceedMaxOccupationException e) {
-						System.err.println(SIGNATURE + e.getMessage());
-					} catch (ObjectExistsInCollectionException e) {
-						System.err.println(SIGNATURE + e.getMessage());
-					}
+			List<RoadSection> list = Predicates.filterRoadSections(r.listOfRoadSections(), Predicates.roadSectionByNumber(roadSectionNum));
+			if (list.size() > 0){
+				try {
+					RoadSection rs = list.get(0);
+					rs.insertVehicle(this);
+					this.currentPosition = rs;
+					System.out.println("Car " + this.id + " is entering road " + r.name() +" at section "+ rs.number());
+				} catch (ExceedMaxOccupationException e) {
+					System.err.println(SIGNATURE + e.getMessage());
+				} catch (ObjectExistsInCollectionException e) {
+					System.err.println(SIGNATURE + e.getMessage());
 				}
 			}
+			
+			
+			//for (RoadSection rs : r.listOfRoadSections()){
+				//if (rs.number() == roadSectionNum){
+					
+				//}
+			//}
 		}
 		
 		//random selection of the direction the vehicle will take

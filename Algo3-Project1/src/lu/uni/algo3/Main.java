@@ -7,8 +7,9 @@ public class Main {
 	private static ArrayList<Vehicle> listOfVehicles = new ArrayList<Vehicle>();
 	public static void main(String[] args) {
 		generateCars();
+		Simulator.uploadLuxRoadMap();
 		for(Vehicle v: listOfVehicles)
-			v.run();
+			(new Thread(v)).start();
 	}
 	public static void generateCars(){
 		int numberOfCarsToGenerate = Utils.returnRandomInt(50, 100);

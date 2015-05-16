@@ -15,10 +15,16 @@ public class Predicates {
 	public static List<Vehicle> filterVehicles(HashSet<Vehicle> vehicles, Predicate<Vehicle> predicate){
 		return vehicles.stream().filter(predicate).collect(Collectors.<Vehicle>toList());
 	}
-	public static Predicate<TollRecord> tollRecordForVehilce(Vehicle v){
+	public static Predicate<TollRecord> tollRecordForVehicle(Vehicle v){
 		return p -> p.Vehicle() == v;
 	}
 	public static List<TollRecord> filterTollRecords(ArrayList<TollRecord> trs, Predicate<TollRecord> predicate){
 		return trs.stream().filter(predicate).collect(Collectors.<TollRecord>toList());
+	}
+	public static Predicate<RoadSection> roadSectionByNumber(int number){
+		return p -> p.number() == number;
+	}
+	public static List<RoadSection> filterRoadSections(ArrayList<RoadSection> arrayList, Predicate<RoadSection> predicate){
+		return arrayList.stream().filter(predicate).collect(Collectors.<RoadSection>toList());
 	}
 }

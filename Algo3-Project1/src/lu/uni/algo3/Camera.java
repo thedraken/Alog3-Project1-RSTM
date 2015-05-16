@@ -91,7 +91,7 @@ public class Camera implements Comparable<Camera> {
 	public synchronized TollRecord closeTollRecord(Vehicle v) throws MissingTollRecordException{
 		//TODO should we store the list of open toll records against the vehicle or camera
 		if (openTollRecords.size() > 0){
-			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehilce(v));
+			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehicle(v));
 			if (listOfTolls.size() > 0){
 				TollRecord tr = listOfTolls.get(0);
 				tr.setExit(this, new DateTime());

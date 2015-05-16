@@ -108,7 +108,13 @@ public class RoadSection implements Comparable<RoadSection> {
 		for(RoadSectionObserver obs : _listOfObservers)
 			obs.updateRS(this);
 	}
-	@Override
+	public synchronized void addRoadSectionConnection(RoadSection rs){
+		if (this._connectionToOtherRoadSections.contains(rs))
+			return;
+		this._connectionToOtherRoadSections.add(rs);
+		this._roadContinutesAfterSection = true;
+	}
+	@Override	
 	public synchronized boolean equals(Object o){
 		if (!(o instanceof RoadSection))
 			return false;
