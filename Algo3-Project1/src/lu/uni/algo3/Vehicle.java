@@ -28,7 +28,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private RoadSection currentPosition;
 	private Direction direction;
 	boolean exitRoadMap = false;
-	private final String SIGNATURE = "Vehicle" + id + ": ";
+	private String SIGNATURE;
 	// TODO listOfRecords
 	
 	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
@@ -55,8 +55,10 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
 			this.id = indexer.getNewID(SQLType.Vehicle);
+			SIGNATURE = "Vehicle " + this.id + ": ";
 		} catch (OutOfRangeException e) {
-			System.err.println(SIGNATURE + e.getMessage());
+			System.err.println(e.getMessage());
+			SIGNATURE = "";
 		}
 		this.licencePlate = licencePlate;
 		this.category = category;
