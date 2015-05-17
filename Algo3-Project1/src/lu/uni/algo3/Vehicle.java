@@ -1,6 +1,7 @@
 package lu.uni.algo3;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
@@ -27,13 +28,16 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private Category category;
 	private RoadSection currentPosition;
 	private Direction direction;
-	boolean exitRoadMap = false;
+	private boolean stopped = false;
+	private boolean exitRoadMap = false;
 	private String SIGNATURE;
 	// TODO listOfRecords
 	
 	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
 	private static final int MINCARWAITTIME = 1000;
 	private static final int MAXCARWAITTIME = 10000;
+	//the time a car stops due to malfunction/accident
+	private static final int CARSTOPTIME = 15000;
 	
 	/*suggestion for SQLIndexer singleton:
 	 * since we have multiple threads accessing this method we should probably use
@@ -86,6 +90,23 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public String getTransponder(){
 		return transponder;
 	}
+	
+	public boolean hasStopped(){
+		return stopped;
+	}
+	
+	public void changePosition(Road r, RoadSection rs){
+		try {
+			currentPosition.removeVehicle(this);
+			rs.insertVehicle(this);
+			currentPosition = rs;
+			System.out.println(SIGNATURE +" changing to section "+ rs.number() + " on road " + r.name() );
+		} catch (ExceedMaxOccupationException e) {
+			System.err.println(SIGNATURE + e.getMessage());
+		} catch (ObjectExistsInCollectionException e) {
+			System.err.println(SIGNATURE + e.getMessage());
+		}
+	}
 
 	@Override
 	public void run() {
@@ -106,15 +127,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					System.err.println(SIGNATURE + e.getMessage());
 				}
 			}
-			
-			
-			//for (RoadSection rs : r.listOfRoadSections()){
-				//if (rs.number() == roadSectionNum){
-					
-				//}
-			//}
 		}
-		
 		//random selection of the direction the vehicle will take
 		boolean asc = Utils.returnRandomBoolean(0.5);
 		if (asc){
@@ -126,11 +139,22 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		
 		while(!exitRoadMap){
 			
+			//5% of the cars will stop on the road due to malfunctioning/accident
+			boolean stop = Utils.returnRandomBoolean(0.05);
+			if(stop){
+				stopped = true;
+				try {
+					Thread.sleep(CARSTOPTIME);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				stopped = false;
+			}
+			
 			//move and simulate different random speeds
 			try {
 				Thread.sleep(Utils.returnRandomInt(MINCARWAITTIME, MAXCARWAITTIME));
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -144,7 +168,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		// TODO check
 		int behavior = 2;
 		//the behavior of the vehicle is randomly generated
-		//the vehicle has 60% probability of staying on the same road
+		//the vehicle has 60% probability of staying on the same road, if possible
 		if (Utils.returnRandomBoolean(0.6)){
 			behavior = 0;
 		}
@@ -154,9 +178,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 				behavior = 1;
 			}
 		}
-	
+		
 		RoadSection currentRS;
-		RoadSection nextRS = null;
 		boolean success = false;
 		
 		switch (behavior) {
@@ -164,34 +187,33 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			//if not try next case
 			case 0:
 				for (Road r : Simulator.roadMap){
-					Iterator<RoadSection> it; 
-					//shit! maybe we need an hashSet afterall...
-//					if (direction.equals(Direction.ascending)){
-						it = r.listOfRoadSections().iterator();
-//					}
-//					else{
-//						it = new DescendingIterator<RoadSection>(r.listOfRoadSections);
-//					}
-					while(it.hasNext()){
-						currentRS = it.next();
-						if (currentRS.equals(currentPosition) && it.hasNext()){
-							currentRS.removeVehicle(this);
-							nextRS = it.next();
-							try {
-								nextRS.insertVehicle(this);
-								currentPosition = nextRS;
-							} catch (ExceedMaxOccupationException e) {
-								System.err.println(SIGNATURE + e.getMessage());
-							} catch (ObjectExistsInCollectionException e) {
-								System.err.println(SIGNATURE + e.getMessage());
+					if (direction.equals(Direction.ascending)){
+						Iterator<RoadSection> it = r.listOfRoadSections().iterator();
+						
+						while(it.hasNext()){
+							if (it.next().equals(currentPosition) && it.hasNext()){
+								changePosition(r,it.next());
+								success = true;
 							}
-							success = true;
 						}
+						if (success){
+							break;
+						} 
 					}
-					if (success){
-						break;
+					else{
+						ListIterator<RoadSection> it = r.listOfRoadSections().listIterator(r.listOfRoadSections().size());
+						
+						while(it.hasPrevious()){
+							if (it.previous().equals(currentPosition) && it.hasPrevious()){
+								changePosition(r, it.previous());
+								success = true;
+							}
+						}
+						if (success){
+							break;
+						} 
 					}
-				}
+				}	
 				if (success){
 					break;
 				}
@@ -205,20 +227,10 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					while(it.hasNext()){
 						currentRS = it.next();
 						if (currentRS.equals(currentPosition) && !currentRS.connectionToOtherRoadSections().isEmpty()){
-							//currentRS know references the same object so the roadSection in the Simulator.roadMap will be changed, right...?
-							currentRS.removeVehicle(this);
 							//since the order of access to HashSet elements is not guaranteed, this will be kind of a random choice
 							for (RoadSection rs : currentRS.connectionToOtherRoadSections()){
-								nextRS = rs;
+								changePosition(r, rs);
 								break;
-							}
-							try {
-								nextRS.insertVehicle(this);
-								currentPosition = nextRS;
-							} catch (ExceedMaxOccupationException e) {
-								System.err.println(SIGNATURE + e.getMessage());
-							} catch (ObjectExistsInCollectionException e) {
-								System.err.println(SIGNATURE + e.getMessage());
 							}
 							success = true;
 						}
@@ -233,6 +245,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			//case 2 and default: the vehicle exits the road map - the thread finishes its execution
 			case 2: default:
 				exitRoadMap = true;
+				System.out.println(SIGNATURE + " leaving road map !");
 				break;
 		}
 	}

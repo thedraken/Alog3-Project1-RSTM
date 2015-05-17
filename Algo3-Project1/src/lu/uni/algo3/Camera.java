@@ -69,9 +69,10 @@ public class Camera implements Comparable<Camera> {
 		p.setVehicle(listV.get(Utils.returnRandomInt(0, listV.size()-1)));
 	}
 	public synchronized boolean stationaryVehicle(){
-		//TODO we should add a thing to the vehicle that tells it randomly to stop
 		for(Vehicle v: _location.getAllVehiclesInside()){
-			//if (v.stopped)
+			if (v.hasStopped()){
+				return true;
+			}
 		}
 		return false;
 	}

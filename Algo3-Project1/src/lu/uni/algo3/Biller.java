@@ -14,7 +14,7 @@ public class Biller implements TollRecordObserver, Runnable{
 	}
 	
 	@Override
-	public void update(){
+	public void updateTR(TollRecord tr){
 		
 	}
 

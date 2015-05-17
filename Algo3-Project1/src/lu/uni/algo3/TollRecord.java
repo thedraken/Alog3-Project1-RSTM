@@ -94,7 +94,7 @@ public class TollRecord implements Comparable<TollRecord> {
 	}
 	public synchronized void notifyObservers(){
 		for(TollRecordObserver tro: hshstTollRecordObserver){
-			tro.notify();
+			tro.updateTR(this);
 		}
 	}
 	@Override

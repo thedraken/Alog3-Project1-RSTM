@@ -67,12 +67,6 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	@Override
 	public void updateRS(RoadSection rs) {
 		sendCongestionWarning(rs);
-		for (RoadSection r : roadsToObserve){
-			if (rs.number() == r.number()){
-				roadsToObserve.remove(r);
-				roadsToObserve.add(rs);
-			}
-		}
 	}
 
 	@Override
