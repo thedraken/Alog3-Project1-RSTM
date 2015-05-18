@@ -30,8 +30,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private Direction direction;
 	private boolean stopped = false;
 	private boolean exitRoadMap = false;
-	private String SIGNATURE;
-	// TODO listOfRecords
+	private String signature;
+	private TollRecord tollR;
 	
 	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
 	private static final int MINCARWAITTIME = 1000;
@@ -59,10 +59,10 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
 			this.id = indexer.getNewID(SQLType.Vehicle);
-			SIGNATURE = "Vehicle " + this.id + ": ";
+			signature = "Vehicle " + this.id + ": ";
 		} catch (OutOfRangeException e) {
 			System.err.println(e.getMessage());
-			SIGNATURE = "";
+			signature = "";
 		}
 		this.licencePlate = licencePlate;
 		this.category = category;
@@ -95,16 +95,24 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		return stopped;
 	}
 	
+	public TollRecord getTollRecord(){
+		return tollR;
+	}
+	
+	public void setTollRecord(TollRecord tollR){
+		this.tollR = tollR;
+	}
+	
 	public void changePosition(Road r, RoadSection rs){
 		try {
 			currentPosition.removeVehicle(this);
 			rs.insertVehicle(this);
 			currentPosition = rs;
-			System.out.println(SIGNATURE +" changing to section "+ rs.number() + " on road " + r.name() );
+			System.out.println(signature +" changing to section "+ rs.number() + " on road " + r.name() );
 		} catch (ExceedMaxOccupationException e) {
-			System.err.println(SIGNATURE + e.getMessage());
+			System.err.println(signature + e.getMessage());
 		} catch (ObjectExistsInCollectionException e) {
-			System.err.println(SIGNATURE + e.getMessage());
+			System.err.println(signature + e.getMessage());
 		}
 	}
 
@@ -120,11 +128,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					RoadSection rs = list.get(0);
 					rs.insertVehicle(this);
 					this.currentPosition = rs;
-					System.out.println(SIGNATURE + "Entering road " + r.name() +" at section "+ rs.number());
+					System.out.println(signature + "Entering road " + r.name() +" at section "+ rs.number());
 				} catch (ExceedMaxOccupationException e) {
-					System.err.println(SIGNATURE + e.getMessage());
+					System.err.println(signature + e.getMessage());
 				} catch (ObjectExistsInCollectionException e) {
-					System.err.println(SIGNATURE + e.getMessage());
+					System.err.println(signature + e.getMessage());
 				}
 			}
 		}
@@ -245,7 +253,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			//case 2 and default: the vehicle exits the road map - the thread finishes its execution
 			case 2: default:
 				exitRoadMap = true;
-				System.out.println(SIGNATURE + " leaving road map !");
+				currentPosition.removeVehicle(this);
+				System.out.println(signature + " leaving road map !");
 				break;
 		}
 	}

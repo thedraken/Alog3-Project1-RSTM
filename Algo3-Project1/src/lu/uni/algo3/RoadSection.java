@@ -75,6 +75,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		if (_listOfVehiclesInside.contains(v))
 			throw new ObjectExistsInCollectionException();
 		_listOfVehiclesInside.add(v);
+		//TODO add so roadsection tells camera to take picture
 		notifyObservers();
 	}
 	public synchronized boolean removeVehicle(Vehicle v){
