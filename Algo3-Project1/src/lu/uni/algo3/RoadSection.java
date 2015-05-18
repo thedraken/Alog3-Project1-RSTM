@@ -19,18 +19,19 @@ public class RoadSection implements Comparable<RoadSection> {
 	private HashSet<RoadSectionObserver> _listOfObservers;
 	private int hashCodeExtra;
 	private double _distance;
-	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection){
-		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection);
+	private Camera _camera;
+	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection, Camera cam){
+		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection, cam);
 		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
 		this._roadContinutesAfterSection = true;
 		
 	}
-	public RoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection){
-		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection);
+	public RoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam){
+		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection, cam);
 		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
-	private void baseRoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection){
+	private void baseRoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam){
 		this._number = number;
 		this._speedLimit = speedLimit;
 		this._maxOccupation = maxOccupation;
@@ -38,6 +39,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		this._listOfVehiclesInside = new HashSet<Vehicle>();
 		hashCodeExtra = Utils.returnRandomInt();
 		this._distance = distanceOfRoadSection;
+		this._camera = cam;
 	}
 	public int number(){
 		return this._number;
@@ -68,6 +70,9 @@ public class RoadSection implements Comparable<RoadSection> {
 	}
 	public int getOccupation(){
 		return this._listOfVehiclesInside.size();
+	}
+	public Camera getCamera(){
+		return this._camera;
 	}
 	public synchronized void insertVehicle(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
 		if (_listOfVehiclesInside.size() +1 > _maxOccupation)

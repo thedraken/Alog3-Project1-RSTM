@@ -13,7 +13,10 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	
 	private int id;
 	private Set<RoadSection> roadsToObserve;
+	//TODO change to constructor:
 	private final String SIGNATURE = "RW" + id + ": ";
+	
+	private final int BREAKTIME = 5000; 
 	
 	public RescueWorker(HashSet<RoadSection> roadsToObserve){
 		//SQLIndexer is responsible to increment and assign unique IDs
@@ -63,10 +66,12 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 		return null;
 	}
 	
-	public void getPossibleAccident(TollRecord tr){
-		if (tr.Vehicle().hasStopped()){
-			System.out.println(SIGNATURE + tr.Vehicle() + " stopped on " + locateVehicle(tr.Vehicle()));
-			checkTrafficTo(locateVehicle(tr.Vehicle()));
+	public void getPossibleAccident(RoadSection rs){
+		if (!rs.getCamera().stationaryVehicles().isEmpty()){
+			for (Vehicle v : rs.getCamera().stationaryVehicles()){
+				System.out.println(SIGNATURE + v + " stopped on " + rs);
+				checkTrafficTo(rs);
+			}
 		}
 	}
 	
@@ -75,11 +80,12 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	public void updateRS(RoadSection rs) {
 		if (rs.isBusy())
 			System.out.println(SIGNATURE + "Attention! Traffic on " + rs + " is getting busy !");
+		getPossibleAccident(rs);
 	}
 	
 	@Override
 	public void updateTR(TollRecord tr){
-		getPossibleAccident(tr);
+		
 	}
 
 	@Override
@@ -87,9 +93,18 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 		// TODO Auto-generated method stub
 		//what do I put here??
 		while (true){
-			
+			for (RoadSection rs : roadsToObserve){
+				getPossibleAccident(rs);
+			}
+			try {
+				Thread.sleep(BREAKTIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			};
 		}
 		
 	}
+	
+	//TODO implement toString()?
 
 }

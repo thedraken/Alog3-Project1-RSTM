@@ -68,13 +68,14 @@ public class Camera implements Comparable<Camera> {
 		List<Vehicle> listV = (List<Vehicle>)Utils.hashSetToArrayList(_location.getAllVehiclesInside());
 		p.setVehicle(listV.get(Utils.returnRandomInt(0, listV.size()-1)));
 	}
-	public synchronized boolean stationaryVehicle(){
+	public synchronized List<Vehicle> stationaryVehicles(){
+		List<Vehicle> stoppedVehicles = new ArrayList<Vehicle>();
 		for(Vehicle v: _location.getAllVehiclesInside()){
 			if (v.hasStopped()){
-				return true;
+				stoppedVehicles.add(v);
 			}
 		}
-		return false;
+		return stoppedVehicles;
 	}
 	public synchronized void updateRoadOccupation(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
 		if (!this._location.alreadyInside(v))
