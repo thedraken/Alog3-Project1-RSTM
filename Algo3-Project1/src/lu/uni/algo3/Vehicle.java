@@ -30,7 +30,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private Direction direction;
 	private boolean stopped = false;
 	private boolean exitRoadMap = false;
-	private String signature;
 	private TollRecord tollR;
 	
 	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
@@ -59,10 +58,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
 			this.id = indexer.getNewID(SQLType.Vehicle);
-			signature = "Vehicle " + this.id + ": ";
 		} catch (OutOfRangeException e) {
 			System.err.println(e.getMessage());
-			signature = "";
 		}
 		this.licencePlate = licencePlate;
 		this.category = category;
@@ -108,11 +105,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			currentPosition.removeVehicle(this);
 			rs.insertVehicle(this);
 			currentPosition = rs;
-			System.out.println(signature +" changing to section "+ rs.number() + " on road " + r.name() );
+			System.out.println(this.toString() +" changing to section "+ rs.number() + " on road " + r.name() );
 		} catch (ExceedMaxOccupationException e) {
-			System.err.println(signature + e.getMessage());
+			System.err.println(this.toString() + "\n" + e.getMessage());
 		} catch (ObjectExistsInCollectionException e) {
-			System.err.println(signature + e.getMessage());
+			System.err.println(this.toString() + "\n" + e.getMessage());
 		}
 	}
 
@@ -128,11 +125,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					RoadSection rs = list.get(0);
 					rs.insertVehicle(this);
 					this.currentPosition = rs;
-					System.out.println(signature + "Entering road " + r.name() +" at section "+ rs.number());
+					System.out.println(this.toString() + " Entering road " + r.name() +" at section "+ rs.number());
 				} catch (ExceedMaxOccupationException e) {
-					System.err.println(signature + e.getMessage());
+					System.err.println(this.toString() + "\n" + e.getMessage());
 				} catch (ObjectExistsInCollectionException e) {
-					System.err.println(signature + e.getMessage());
+					System.err.println(this.toString() + "\n" + e.getMessage());
 				}
 			}
 		}
@@ -254,7 +251,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			case 2: default:
 				exitRoadMap = true;
 				currentPosition.removeVehicle(this);
-				System.out.println(signature + " leaving road map !");
+				System.out.println(this.toString() + " leaving road map !");
 				break;
 		}
 	}
@@ -293,7 +290,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	@Override
 	public String toString(){
-		return "Vehicle" + id + " of catgory " + category.toString() + 
-				"currently driving on " + currentPosition;
+		return "Vehicle " + id;
 	}
 }

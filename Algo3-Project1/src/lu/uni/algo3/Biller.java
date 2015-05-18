@@ -1,32 +1,72 @@
 package lu.uni.algo3;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
-public class Biller implements TollRecordObserver, Runnable{
+import lu.uni.algo3.SQLIndexer.SQLType;
+import lu.uni.algo3.exceptions.OutOfRangeException;
+import lu.uni.algo3.exceptions.TollIsNotCompleteException;
+
+public class Biller implements RoadSectionObserver, Runnable{
 	
-	private TollRecord tRecord;
-	private HashSet<Vehicle> listOfVehicles;
+	private int id;
+	private Set<RoadSection> roadsToObserve;
 	
-	public Biller(TollRecord tRecord){
-		listOfVehicles = new HashSet<Vehicle>();
-		this.tRecord = tRecord;
-		//tRecord.register(this);
+	private final int BREAKTIME = 5000; 
+	
+	public Biller(HashSet<RoadSection> roadsToObserve){
+		//SQLIndexer is responsible to increment and assign unique IDs
+		SQLIndexer indexer = SQLIndexer.getInstance();
+		try {
+			this.id = indexer.getNewID(SQLType.Biller);
+		} catch (OutOfRangeException e) {
+			System.err.println(this.toString() + "\n" + e.getMessage());
+		}
+		for(RoadSection rs : roadsToObserve){
+			rs.registerObserver(this);
+		}
+		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
+	}
+	
+	public void printBill(RoadSection rs){
+		for (Vehicle v : rs.getAllVehiclesInside()){
+			if (v.getTollRecord().ExitTime() != null){
+				try {
+					Bill finalBill = v.getTollRecord().generateBill();
+					System.out.println(this.toString() + " Bill for vehicle with ID " + v.getID() + ": " + "amount: " + finalBill.AmountDue());
+				} catch (TollIsNotCompleteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	@Override
-	public void updateTR(TollRecord tr){
-		
+	public void updateRS(RoadSection rs){
+		printBill(rs);
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		while (true){
+			for (RoadSection rs : roadsToObserve){
+				printBill(rs);
+			}
+			try {
+				Thread.sleep(BREAKTIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		//tRecord.remove(this);
 	}
 	
-	public void monthlyBill(){
-		
+	@Override
+	public String toString(){
+		return "Biller " + id;
 	}
 
 }

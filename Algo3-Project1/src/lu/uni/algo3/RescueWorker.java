@@ -13,8 +13,6 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	
 	private int id;
 	private Set<RoadSection> roadsToObserve;
-	//TODO change to constructor:
-	private final String SIGNATURE = "RW" + id + ": ";
 	
 	private final int BREAKTIME = 5000; 
 	
@@ -22,9 +20,9 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
-			this.id = indexer.getNewID(SQLType.Vehicle);
+			this.id = indexer.getNewID(SQLType.RescueWorker);
 		} catch (OutOfRangeException e) {
-			System.err.println(SIGNATURE + e.getMessage());
+			System.err.println(this.toString() + "\n" + e.getMessage());
 		}
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
@@ -36,18 +34,18 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	//on a given destination road section
 	public void checkTrafficTo(RoadSection rs){
 		TreeSet<RoadSection> orderedRoadSections = new TreeSet<RoadSection>(roadsToObserve);
-		System.out.println(SIGNATURE + "Checking traffic to get to " + rs);
+		System.out.println(this.toString() + " Checking traffic to get to " + rs);
 		boolean clear = true;
 		Iterator<RoadSection> iterator = orderedRoadSections.iterator();
 		//check for traffic jams from the beginning of the road until the desired road section
 		while (iterator.hasNext()){
 			RoadSection r = iterator.next();
 			if (r.isBusy()){
-				System.out.println(SIGNATURE + "Traffic on " + r + " is congested !");
+				System.out.println(this.toString() + " Traffic on " + r + " is congested !");
 				clear = false;
 			}
 			if (clear){
-				System.out.println(SIGNATURE + "Traffic is flowing !");
+				System.out.println(this.toString() + " Traffic is flowing !");
 			}
 			//once we reach the destination, we don't need to continue checking the traffic
 			//on the rest of the road
@@ -69,7 +67,7 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	public void getPossibleAccident(RoadSection rs){
 		if (!rs.getCamera().stationaryVehicles().isEmpty()){
 			for (Vehicle v : rs.getCamera().stationaryVehicles()){
-				System.out.println(SIGNATURE + v + " stopped on " + rs);
+				System.out.println(this.toString() + " " + v + " stopped on " + rs);
 				checkTrafficTo(rs);
 			}
 		}
@@ -79,7 +77,7 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 	@Override
 	public void updateRS(RoadSection rs) {
 		if (rs.isBusy())
-			System.out.println(SIGNATURE + "Attention! Traffic on " + rs + " is getting busy !");
+			System.out.println(this.toString() + " Attention! Traffic on " + rs + " is getting busy !");
 		getPossibleAccident(rs);
 	}
 	
@@ -100,11 +98,14 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 				Thread.sleep(BREAKTIME);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			};
+			}
 		}
 		
 	}
 	
-	//TODO implement toString()?
+	@Override
+	public String toString(){
+		return "Road Worker " + id;
+	}
 
 }
