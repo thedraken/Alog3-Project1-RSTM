@@ -43,6 +43,16 @@ public class Biller implements RoadSectionObserver, Runnable{
 		}
 	}
 	
+	//checks if all the road sections have no vehicles inside
+	public boolean roadIsEmpty(){
+		for (RoadSection rs : roadsToObserve){
+			if (!rs.getAllVehiclesInside().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	@Override
 	public void updateRS(RoadSection rs){
 		printBill(rs);
@@ -50,8 +60,8 @@ public class Biller implements RoadSectionObserver, Runnable{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		while (true){
+		// a biller will do his job until there are no more vehicles on the road
+		while (!roadIsEmpty()){
 			for (RoadSection rs : roadsToObserve){
 				printBill(rs);
 			}
