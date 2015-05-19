@@ -10,6 +10,7 @@ import java.util.Set;
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
 import lu.uni.algo3.exceptions.OutOfRangeException;
+import lu.uni.algo3.utils.Utils;
 
 public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	
@@ -43,8 +44,10 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	public RoadSection searchVehicle(Vehicle car){
 		for (RoadSection rs : roadsToObserve){
 			for (Vehicle v : rs.getAllVehiclesInside()){
-				if (v.equals(car))
+				if (v.equals(car)){
+					System.out.println(this.toString() + " " + v + " found on " + rs + ". Sending unit to pursuit.");
 					return rs;
+				}
 			}
 		}
 		return null;
@@ -78,22 +81,54 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		for (RoadSection rs : roadsToObserve){
 			for (Photograph p : rs.getCamera().photosTaken()){
 				if (p.vehicle().equals(car)){
+					System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
 					photos.add(p);
 				}
 			}
 		}
 		return photos;
 	}
+	
+	//checks if all the road sections have no vehicles inside
+	public boolean roadIsEmpty(){
+		for (RoadSection rs : roadsToObserve){
+			if (!rs.getAllVehiclesInside().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public void updateRS(RoadSection rs) {
-		// TODO Auto-generated method stub
-		
+		getSpeedViolations(rs);
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		
+		//police officers will stop working once there are no more vehicles on the road
+		while (!roadIsEmpty()){
+			//search for a random car on the run...
+			//since there are no guarantees on the iteration order of the set
+			//this will give us a (kind of...) random vehicle on a (kind of...) random road section...
+			for (RoadSection rs : roadsToObserve){
+				for (Vehicle v : rs.getAllVehiclesInside()){
+					searchVehicle(v);
+					System.out.println(this.toString() + "Downloading photographs of " + v + ":");
+					getPhotosOfCar(v);
+					break;
+				}
+				break;
+			}
+			
+			try {
+				Thread.sleep(BREAKTIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	
