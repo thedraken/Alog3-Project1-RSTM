@@ -29,6 +29,16 @@ public class Biller implements RoadSectionObserver, Runnable{
 		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
 	}
 	
+	public void addRoadSection(RoadSection r){
+		r.registerObserver(this);
+		roadsToObserve.add(r);
+	}
+	
+	public void removeRoadSection(RoadSection r){
+		r.removeObserver(this);
+		roadsToObserve.remove(r);
+	}
+	
 	public void printBill(RoadSection rs){
 		for (Vehicle v : rs.getAllVehiclesInside()){
 			if (v.getTollRecord().ExitTime() != null){

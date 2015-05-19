@@ -1,12 +1,10 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.TollIsNotCompleteException;
 import lu.uni.algo3.utils.Utils;
 
@@ -19,7 +17,6 @@ public class TollRecord implements Comparable<TollRecord> {
 	private DateTime _exitTime;
 	private boolean hasExited = false;
 	private int _hashExtra;
-	private HashSet<TollRecordObserver> hshstTollRecordObserver;
 	public TollRecord(Vehicle vehicle, Camera entry, DateTime dateTimePassedCamera){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
@@ -80,22 +77,6 @@ public class TollRecord implements Comparable<TollRecord> {
 		}
 		return false;
 		
-	}
-	public synchronized void registerObserver(TollRecordObserver tro) throws ObjectExistsInCollectionException{
-		if (hshstTollRecordObserver == null)
-			hshstTollRecordObserver = new HashSet<TollRecordObserver>();
-		if (hshstTollRecordObserver.contains(tro))
-			throw new ObjectExistsInCollectionException();
-		hshstTollRecordObserver.add(tro);
-	}
-	public synchronized void removeObserver(TollRecordObserver tro){
-		if (hshstTollRecordObserver.contains(tro))
-			hshstTollRecordObserver.remove(tro);
-	}
-	public synchronized void notifyObservers(){
-		for(TollRecordObserver tro: hshstTollRecordObserver){
-			tro.updateTR(this);
-		}
 	}
 	@Override
 	public boolean equals(Object o){

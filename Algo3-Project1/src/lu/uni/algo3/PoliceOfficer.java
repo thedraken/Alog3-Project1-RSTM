@@ -33,6 +33,16 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
 	}
 	
+	public void addRoadSection(RoadSection r){
+		r.registerObserver(this);
+		roadsToObserve.add(r);
+	}
+	
+	public void removeRoadSection(RoadSection r){
+		r.removeObserver(this);
+		roadsToObserve.remove(r);
+	}
+	
 	public void getSpeedViolations(RoadSection rs){
 		for (Vehicle v : rs.getAllVehiclesInside()){
 			if (v.getTollRecord().speedViolation()){
@@ -58,6 +68,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		for (RoadSection rs : roadsToObserve){
 			for (Vehicle v : rs.getAllVehiclesInside()){
 				if (v.getCategory().equals(category))
+					System.out.println(this.toString() + " Found " + v + " on " + rs + " of category " + category.toString());
 					vehicleOfCat.add(v);
 			}
 		}
@@ -106,8 +117,6 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
 		//police officers will stop working once there are no more vehicles on the road
 		while (!roadIsEmpty()){
 			//search for a random car on the run...
@@ -134,12 +143,37 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				}
 				j++;
 			}
-			
+			//grab a cup of coffee
 			try {
 				Thread.sleep(BREAKTIME);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			//look for a random category of vehicles
+			Category randomCategory;
+			if (Utils.returnRandomBoolean(0.5)){
+				randomCategory = Category.Car;
+			}
+			else if (Utils.returnRandomBoolean(0.5)){
+				randomCategory = Category.LGV;
+			}
+			else if (Utils.returnRandomBoolean(0.5)){
+				randomCategory = Category.HGV;
+			}
+			else if (Utils.returnRandomBoolean(0.5)){
+				randomCategory = Category.Motorbike;
+			}
+			else {
+				randomCategory = Category.Other;
+			}
+			searchVehiclesByCategory(randomCategory);
+			//go for a smoke
+			try {
+				Thread.sleep(BREAKTIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			//look for pictures taken at a given random date/time on random road section???
 		}
 		
 	}

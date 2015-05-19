@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 
-public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordObserver{
+public class RescueWorker implements Runnable, RoadSectionObserver{
 	
 	private int id;
 	private Set<RoadSection> roadsToObserve;
@@ -28,6 +28,16 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 			rs.registerObserver(this);
 		}
 		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
+	}
+	
+	public void addRoadSection(RoadSection r){
+		r.registerObserver(this);
+		roadsToObserve.add(r);
+	}
+	
+	public void removeRoadSection(RoadSection r){
+		r.removeObserver(this);
+		roadsToObserve.remove(r);
 	}
 	
 	//traffic workers will check the traffic to get to an accident
@@ -90,11 +100,6 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 		getPossibleAccident(rs);
 	}
 	
-	@Override
-	public void updateTR(TollRecord tr){
-		
-	}
-
 	@Override
 	public void run() {
 		//a rescue worker will do his job until there are no more cars on the road
