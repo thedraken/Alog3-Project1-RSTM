@@ -53,7 +53,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	}
 	 */
 
-	public Vehicle(String licencePlate, Category category) {
+	public Vehicle(String licencePlate) {
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -62,7 +62,23 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			System.err.println(e.getMessage());
 		}
 		this.licencePlate = licencePlate;
-		this.category = category;
+		//80% of the vehicles will be in the Car category
+		//other categories will be more or less equally represented
+		if (Utils.returnRandomBoolean(0.8)){
+			this.category = Category.Car;
+		}
+		else if (Utils.returnRandomBoolean(0.5)){
+			this.category = Category.LGV;
+		}
+		else if (Utils.returnRandomBoolean(0.5)){
+			this.category = Category.HGV;
+		}
+		else if (Utils.returnRandomBoolean(0.5)){
+			this.category = Category.Motorbike;
+		}
+		else {
+			this.category = Category.Other;
+		}
 	}
 	
 	public int getID(){
