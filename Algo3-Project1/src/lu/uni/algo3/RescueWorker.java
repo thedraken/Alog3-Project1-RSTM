@@ -73,6 +73,15 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 		}
 	}
 	
+	//checks if all the road sections have no vehicles inside
+	public boolean roadIsEmpty(){
+		for (RoadSection rs : roadsToObserve){
+			if (!rs.getAllVehiclesInside().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public void updateRS(RoadSection rs) {
@@ -88,9 +97,8 @@ public class RescueWorker implements Runnable, RoadSectionObserver, TollRecordOb
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		//what do I put here??
-		while (true){
+		//a rescue worker will do his job until there are no more cars on the road
+		while (!roadIsEmpty()){
 			for (RoadSection rs : roadsToObserve){
 				getPossibleAccident(rs);
 			}

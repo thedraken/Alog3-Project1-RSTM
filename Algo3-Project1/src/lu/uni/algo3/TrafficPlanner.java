@@ -64,6 +64,16 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 			}
 		}
 	}
+	
+	//checks if all the road sections have no vehicles inside
+	public boolean roadIsEmpty(){
+		for (RoadSection rs : roadsToObserve){
+			if (!rs.getAllVehiclesInside().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public void updateRS(RoadSection rs) {
@@ -72,14 +82,17 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 
 	@Override
 	public void run() {
-		for (RoadSection rs : roadsToObserve){
-			sendCongestionWarning(rs);
-		}
-		try {
-			Thread.sleep(BREAKTIME);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		//a traffic planner will do his job until all cars have left the road
+		while(!roadIsEmpty()){
+			for (RoadSection rs : roadsToObserve){
+				sendCongestionWarning(rs);
+			}
+			try {
+				Thread.sleep(BREAKTIME);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 	
 	@Override

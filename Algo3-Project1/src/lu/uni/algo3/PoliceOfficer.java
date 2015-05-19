@@ -111,16 +111,28 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		//police officers will stop working once there are no more vehicles on the road
 		while (!roadIsEmpty()){
 			//search for a random car on the run...
-			//since there are no guarantees on the iteration order of the set
-			//this will give us a (kind of...) random vehicle on a (kind of...) random road section...
+			//we select a random road section, then a random vehicle driving on that section based on this:
+			//http://stackoverflow.com/questions/124671/picking-a-random-element-from-a-set
+			int roadSectionItem = Utils.returnRandomInt(0, roadsToObserve.size());
+			int i = 0, j = 0;
+			RoadSection randomRS = null;
+
 			for (RoadSection rs : roadsToObserve){
-				for (Vehicle v : rs.getAllVehiclesInside()){
+				if (i == roadSectionItem){
+					randomRS = rs;
+					break;
+				}
+				i++;
+			}
+			int vehicleItem = Utils.returnRandomInt(0, randomRS.getAllVehiclesInside().size());
+			for (Vehicle v : randomRS.getAllVehiclesInside()){
+				if (j == vehicleItem){
 					searchVehicle(v);
 					System.out.println(this.toString() + "Downloading photographs of " + v + ":");
 					getPhotosOfCar(v);
 					break;
 				}
-				break;
+				j++;
 			}
 			
 			try {
