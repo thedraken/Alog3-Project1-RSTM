@@ -133,7 +133,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public void run() {
 		//enter roadMap
 		// random selection of starting point for vehicle
-		int roadSectionNum = Utils.returnRandomInt(1, Simulator.NUMBEROFROADSECTIONS);
+		int roadSectionNum = Utils.returnRandomInt(1, Simulator.TOTALNUMBEROFROADSECTIONS);
 		for (Road r : Simulator.roadMap){
 			List<RoadSection> list = Predicates.filterRoadSections(r.listOfRoadSections(), Predicates.roadSectionByNumber(roadSectionNum));
 			if (list.size() > 0){

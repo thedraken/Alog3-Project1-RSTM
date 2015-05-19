@@ -14,10 +14,10 @@ import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
 
 public class Camera implements Comparable<Camera> {
-	public Camera(RoadSection location, Type type) throws OutOfRangeException{
+	public Camera(Type type) throws OutOfRangeException{
 		_id = SQLIndexer.getInstance().getNewID(SQLType.Camera);
 		this._type = type;
-		this._location = location;
+		
 		this._photosTaken = new HashSet<Photograph>();
 		hashCodeExtra = Utils.returnRandomInt();
 	}
