@@ -1,4 +1,5 @@
 package lu.uni.algo3;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -181,7 +182,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	}
 	
 	public void endOfRoadSectionBehavior(){
-		// TODO check
 		int behavior = 2;
 		//the behavior of the vehicle is randomly generated
 		//the vehicle has 60% probability of staying on the same road, if possible
@@ -243,11 +243,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					while(it.hasNext()){
 						currentRS = it.next();
 						if (currentRS.equals(currentPosition) && !currentRS.connectionToOtherRoadSections().isEmpty()){
-							//since the order of access to HashSet elements is not guaranteed, this will be kind of a random choice
-							for (RoadSection rs : currentRS.connectionToOtherRoadSections()){
-								changePosition(rs);
-								break;
-							}
+							List<RoadSection> connections = new ArrayList<RoadSection>(currentRS.connectionToOtherRoadSections());
+							changePosition(connections.get(Utils.returnRandomInt(0, connections.size()-1)));
 							success = true;
 						}
 					}
