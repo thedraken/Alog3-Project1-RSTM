@@ -110,7 +110,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 			for (Vehicle v : vehiclesToCheck){
 				if (j == vehicleItem){
 					searchVehicle(v, randomRS);
-					System.out.println(this.toString() + "Downloading photographs of " + v + ":");
+					System.out.println(this.toString() + " Downloading photographs of " + v + ":");
 					System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
 					break;
 				}
