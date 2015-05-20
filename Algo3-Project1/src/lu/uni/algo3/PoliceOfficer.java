@@ -56,8 +56,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	public List<Vehicle> searchVehiclesByCategory(Category category){
 		List<Vehicle> vehicleOfCat = new ArrayList<Vehicle>();
 		for (RoadSection rs : roadsToObserve){
-			for (Vehicle v : rs.getAllVehiclesInside()){
-				if (v.getCategory().equals(category))
+			for (Vehicle v : Predicates.filterVehicles(rs.getAllVehiclesInside(), Predicates.isCategory(category))){
 					System.out.println(this.toString() + " Found " + v + " on " + rs + " of category " + category.toString());
 					vehicleOfCat.add(v);
 			}
@@ -79,7 +78,8 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	
 	public List<Photograph> getPhotosOfCar(Vehicle car, RoadSection rs){
 		List<Photograph> photos = new ArrayList<Photograph>();
-		for (Photograph p : rs.getCamera().photosTaken()){
+		HashSet<Photograph> hashSetOfPhotos = rs.getCamera().photosTaken(); 
+		for (Photograph p : hashSetOfPhotos){
 			if (p.vehicle().equals(car)){
 				System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
 				photos.add(p);
@@ -103,7 +103,6 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 			int roadSectionItem = Utils.returnRandomInt(0, roadsToObserve.size());
 			int i = 0, j = 0;
 			RoadSection randomRS = null;
-
 			for (RoadSection rs : roadsToObserve){
 				if (i == roadSectionItem){
 					randomRS = rs;
@@ -117,7 +116,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				if (j == vehicleItem){
 					searchVehicle(v, randomRS);
 					System.out.println(this.toString() + "Downloading photographs of " + v + ":");
-					getPhotosOfCar(v, randomRS);
+					System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
 					break;
 				}
 				j++;
