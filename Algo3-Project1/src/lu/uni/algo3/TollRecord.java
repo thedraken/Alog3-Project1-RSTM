@@ -17,7 +17,7 @@ public class TollRecord implements Comparable<TollRecord> {
 	private boolean hasExited = false;
 	private int _hashExtra;
 	private ArrayList<RoadSection> _listOfRoadSectionsTravelled;
-	public TollRecord(Vehicle vehicle, RoadSection entry, DateTime dateTimePassedCamera){
+	public TollRecord(Vehicle vehicle, RoadSection entry){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
 		_exitTime = null;

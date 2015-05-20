@@ -3,9 +3,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
-
-import org.joda.time.DateTime;
-
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
 import lu.uni.algo3.exceptions.MissingTollRecordException;
@@ -33,6 +30,9 @@ public class Camera implements Comparable<Camera> {
 	private RoadSection _location;
 	public RoadSection location(){
 		return this._location;
+	}
+	public void setLocation(RoadSection rs){
+		this._location = rs;
 	}
 	public boolean isWorking(){
 		double value = Utils.returnRandomDouble(0, 100);
@@ -85,7 +85,7 @@ public class Camera implements Comparable<Camera> {
 		System.out.println("Camera " + this._id + " has reported a warning: " + s);
 	}
 	public synchronized TollRecord createTollRecord(Vehicle v){
-		TollRecord tr =  new TollRecord(v, this, new DateTime());
+		TollRecord tr =  new TollRecord(v, this.location());
 		openTollRecords.add(tr);
 		return tr;
 	}
@@ -95,7 +95,7 @@ public class Camera implements Comparable<Camera> {
 			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehicle(v));
 			if (listOfTolls.size() > 0){
 				TollRecord tr = listOfTolls.get(0);
-				tr.setExit(this, new DateTime());
+				tr.setExit(this.location());
 				openTollRecords.remove(tr);
 				return tr;
 			}

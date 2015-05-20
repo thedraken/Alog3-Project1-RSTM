@@ -43,6 +43,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		hashCodeExtra = Utils.returnRandomInt();
 		this._distance = distanceOfRoadSection;
 		this._camera = cam;
+		cam.setLocation(this);
 	}
 	public int number(){
 		return this._number;
@@ -83,13 +84,23 @@ public class RoadSection implements Comparable<RoadSection> {
 		if (_listOfVehiclesInside.contains(v))
 			throw new ObjectExistsInCollectionException();
 		_listOfVehiclesInside.add(v);
-		//TODO add so roadsection tells camera to take picture
+		try {
+			this._camera.capturePhoto();
+		} catch (OutOfRangeException e) {
+			System.out.println("Camera " + this._camera.iD() + " on the roadsection " + this.number() + " was unable to take a photograph");
+			e.printStackTrace();
+		}
+		if (v.getTollRecord() == null)
+			v.setTollRecord(new TollRecord(v, this));
+		else
+			v.getTollRecord().addRoadSection(this);
 		notifyObservers();
 	}
 	public synchronized boolean removeVehicle(Vehicle v){
 		if (_listOfVehiclesInside.contains(v)){
 			_listOfVehiclesInside.remove(v);
 			notifyObservers();
+			//TODO check if vehicle has exited road map and close toll record if that is the case
 			return true;
 		}
 		return false;
