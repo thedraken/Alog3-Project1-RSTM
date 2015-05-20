@@ -1,7 +1,7 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -17,6 +17,7 @@ public class TollRecord implements Comparable<TollRecord> {
 	private boolean hasExited = false;
 	private int _hashExtra;
 	private ArrayList<RoadSection> _listOfRoadSectionsTravelled;
+	private HashMap<RoadSection, Boolean> _speedViolation;
 	public TollRecord(Vehicle vehicle, RoadSection entry){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
@@ -24,6 +25,7 @@ public class TollRecord implements Comparable<TollRecord> {
 		_hashExtra = Utils.returnRandomInt();
 		this._listOfRoadSectionsTravelled = new ArrayList<RoadSection>();
 		_listOfRoadSectionsTravelled.add(entry);
+		_speedViolation = new HashMap<RoadSection, Boolean>();
 	}
 	public int ID(){
 		return _id;
@@ -38,8 +40,10 @@ public class TollRecord implements Comparable<TollRecord> {
 		return _exitTime;
 	}
 	public synchronized void addRoadSection(RoadSection rs){
-		if (!hasExited)
+		if (!hasExited){
 			_listOfRoadSectionsTravelled.add(rs);
+			_speedViolation.put(rs, Utils.returnRandomInt(0, 100) < 5);
+		}
 	}
 	public synchronized ArrayList<RoadSection> ListOfRoadSectionsTranversed(){
 		return this._listOfRoadSectionsTravelled;
@@ -47,7 +51,7 @@ public class TollRecord implements Comparable<TollRecord> {
 	public synchronized void setExit(RoadSection exit){
 		this._exitTime = new DateTime();
 		if (_listOfRoadSectionsTravelled.get(_listOfRoadSectionsTravelled.size()-1) != exit)
-			_listOfRoadSectionsTravelled.add(exit);
+			addRoadSection(exit);
 		hasExited = true;
 	}
 	public Bill generateBill() throws TollIsNotCompleteException{
@@ -62,9 +66,8 @@ public class TollRecord implements Comparable<TollRecord> {
 		}
 		return _bill;
 	}
-	public boolean speedViolation(){
-		//We work on a 5% chance of a speed violation
-		return (Utils.returnRandomInt(0, 100) <= 5);
+	public synchronized boolean speedViolation(RoadSection rs){
+		return _speedViolation.entrySet().stream().filter(p -> p.getValue() && p.getKey() == rs).count() > 0;
 	}
 	@Override
 	public boolean equals(Object o){
