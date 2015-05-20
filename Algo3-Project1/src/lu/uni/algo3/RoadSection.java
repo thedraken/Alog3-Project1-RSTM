@@ -23,18 +23,18 @@ public class RoadSection implements Comparable<RoadSection> {
 	private int hashCodeExtra;
 	private double _distance;
 	private Camera _camera;
-	public RoadSection(int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
-		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
+	private Road _road;
+	public RoadSection(int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection, Camera cam, Road roadIsWith) throws OutOfRangeException{
+		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam, roadIsWith);
 		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
 		this._roadContinutesAfterSection = true;
-		
 	}
-	public RoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
+	public RoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam, Road roadIsWith) throws OutOfRangeException{
 		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
-	private void baseRoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
+	private void baseRoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam, Road roadIsWith) throws OutOfRangeException{
 		this._number = SQLIndexer.getInstance().getNewID(SQLType.RoadSection);
 		this._speedLimit = speedLimit;
 		this._maxOccupation = maxOccupation;
@@ -44,6 +44,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		this._distance = distanceOfRoadSection;
 		this._camera = cam;
 		cam.setLocation(this);
+		this._road = roadIsWith;
 	}
 	public int number(){
 		return this._number;
@@ -59,6 +60,9 @@ public class RoadSection implements Comparable<RoadSection> {
 	}
 	public double distance(){
 		return this._distance;
+	}
+	public Road road(){
+		return this._road;
 	}
 	public synchronized  HashSet<Vehicle> getAllVehiclesInside(){
 		return this._listOfVehiclesInside;
