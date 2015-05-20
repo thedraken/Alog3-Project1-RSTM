@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
-import lu.uni.algo3.exceptions.MissingTollRecordException;
+//import lu.uni.algo3.exceptions.MissingTollRecordException;
 import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
@@ -84,13 +84,12 @@ public class Camera implements Comparable<Camera> {
 		this._warningMessage = s;
 		System.out.println("Camera " + this._id + " has reported a warning: " + s);
 	}
-	public synchronized TollRecord createTollRecord(Vehicle v){
+	/*public synchronized TollRecord createTollRecord(Vehicle v){
 		TollRecord tr =  new TollRecord(v, this.location());
 		openTollRecords.add(tr);
 		return tr;
 	}
 	public synchronized TollRecord closeTollRecord(Vehicle v) throws MissingTollRecordException{
-		//TODO should we store the list of open toll records against the vehicle or camera
 		if (openTollRecords.size() > 0){
 			List<TollRecord> listOfTolls = Predicates.filterTollRecords(openTollRecords, Predicates.tollRecordForVehicle(v));
 			if (listOfTolls.size() > 0){
@@ -103,7 +102,7 @@ public class Camera implements Comparable<Camera> {
 		}
 		throw new MissingTollRecordException(v, this);
 	}
-	private ArrayList<TollRecord> openTollRecords = new ArrayList<TollRecord>();
+	private ArrayList<TollRecord> openTollRecords = new ArrayList<TollRecord>();*/
 	@Override
 	public boolean equals(Object o){
 		if (!(o instanceof Camera))
