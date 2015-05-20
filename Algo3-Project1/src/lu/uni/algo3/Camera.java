@@ -71,9 +71,9 @@ public class Camera implements Comparable<Camera> {
 	public HashSet<Photograph> photosTaken(){
 		return this._photosTaken;
 	}
-	public void capturePhoto() throws OutOfRangeException{
+	public void capturePhoto(Vehicle v) throws OutOfRangeException{
 		Calendar cal = Calendar.getInstance();
-		Photograph p = new Photograph(this.iD(), cal.getTime());
+		Photograph p = new Photograph(this.iD(), cal.getTime(), v);
 		this._photosTaken.add(p);
 	}
 	public void identifyVehicle(Photograph p){

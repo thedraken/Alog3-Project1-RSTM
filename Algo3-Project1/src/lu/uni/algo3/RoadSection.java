@@ -89,7 +89,7 @@ public class RoadSection implements Comparable<RoadSection> {
 			throw new ObjectExistsInCollectionException();
 		_listOfVehiclesInside.add(v);
 		try {
-			this._camera.capturePhoto();
+			this._camera.capturePhoto(v);
 		} catch (OutOfRangeException e) {
 			System.out.println("Camera " + this._camera.iD() + " on the roadsection " + this.number() + " was unable to take a photograph");
 			e.printStackTrace();

@@ -39,13 +39,6 @@ public class Simulator {
 			listOfCarThreads.add(t);
 			t.start();
 		}
-		//Wait a second, make sure the roadmap has data in
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		for (PoliceOfficer po : listOfPoliceOfficers){
 			(new Thread(po)).start();
 		}

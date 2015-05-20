@@ -56,7 +56,9 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	public List<Vehicle> searchVehiclesByCategory(Category category){
 		List<Vehicle> vehicleOfCat = new ArrayList<Vehicle>();
 		for (RoadSection rs : roadsToObserve){
-			for (Vehicle v : Predicates.filterVehicles(rs.getAllVehiclesInside(), Predicates.isCategory(category))){
+			HashSet<Vehicle> hshstV = rs.getAllVehiclesInside();
+			List<Vehicle> listOfVehiclesToCheck =Predicates.filterVehicles(hshstV, Predicates.isCategory(category)); 
+			for (Vehicle v : listOfVehiclesToCheck){
 					System.out.println(this.toString() + " Found " + v + " on " + rs + " of category " + category.toString());
 					vehicleOfCat.add(v);
 			}
@@ -105,16 +107,18 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				}
 				i++;
 			}
-			HashSet<Vehicle> vehiclesToCheck = randomRS.getAllVehiclesInside();
-			int vehicleItem = Utils.returnRandomInt(0, vehiclesToCheck.size());
-			for (Vehicle v : vehiclesToCheck){
-				if (j == vehicleItem){
-					searchVehicle(v, randomRS);
-					System.out.println(this.toString() + " Downloading photographs of " + v + ":");
-					System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
-					break;
+			if (randomRS != null){
+				HashSet<Vehicle> vehiclesToCheck = randomRS.getAllVehiclesInside();
+				int vehicleItem = Utils.returnRandomInt(0, vehiclesToCheck.size());
+				for (Vehicle v : vehiclesToCheck){
+					if (j == vehicleItem){
+						searchVehicle(v, randomRS);
+						System.out.println(this.toString() + " Downloading photographs of " + v + ":");
+						System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
+						break;
+					}
+					j++;
 				}
-				j++;
 			}
 			//grab a cup of coffee
 			try {
@@ -123,7 +127,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				e.printStackTrace();
 			}
 			//look for a random category of vehicles
-			Category randomCategory;
+			/*Category randomCategory;
 			if (Utils.returnRandomBoolean(0.5)){
 				randomCategory = Category.Car;
 			}
@@ -146,6 +150,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			*/
 			//look for pictures taken at a given random date/time on random road section???
 		}
 		
