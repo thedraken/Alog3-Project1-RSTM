@@ -1,20 +1,20 @@
 package lu.uni.algo3;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.exceptions.TollIsNotCompleteException;
 
-public class Biller implements RoadSectionObserver, Runnable{
+public class Biller implements Runnable{
 	
 	private int id;
-	private List<RoadSection> roadsToObserve;
+	private Set<Vehicle> billedCars;
 	
 	private final int BREAKTIME = 5000; 
 	
-	public Biller(ArrayList<RoadSection> roadsToObserve){
+	public Biller(){
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -22,31 +22,18 @@ public class Biller implements RoadSectionObserver, Runnable{
 		} catch (OutOfRangeException e) {
 			System.err.println(this.toString() + "\n" + e.getMessage());
 		}
-		for(RoadSection rs : roadsToObserve){
-			rs.registerObserver(this);
-		}
-		this.roadsToObserve = new ArrayList<RoadSection>(roadsToObserve);
-	}
-	
-	public void addRoadSection(RoadSection r){
-		r.registerObserver(this);
-		roadsToObserve.add(r);
-	}
-	
-	public void removeRoadSection(RoadSection r){
-		r.removeObserver(this);
-		roadsToObserve.remove(r);
+		this.billedCars = new HashSet<Vehicle>();
 	}
 	
 	public void printBill(RoadSection rs){
-		for (Vehicle v : rs.getAllVehiclesInside()){
-			if (v.getTollRecord().ExitTime() != null){
+		for (Vehicle v : Simulator.listOfVehicles){
+			if (v.getTollRecord() != null && v.getTollRecord().ExitTime() != null && !billedCars.contains(v)){
 				try {
 					Bill finalBill = v.getTollRecord().generateBill();
 					System.out.println(this.toString() + " Bill for vehicle with ID " + v.getID() + ": " + "amount: " + finalBill.AmountDue());
+					billedCars.add(v);
 				} catch (TollIsNotCompleteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.err.println(this.toString() + "\n" + e.getMessage());
 				}
 			}
 		}
@@ -64,16 +51,13 @@ public class Biller implements RoadSectionObserver, Runnable{
 	}
 	
 	@Override
-	public void updateRS(RoadSection rs){
-		printBill(rs);
-	}
-
-	@Override
 	public void run() {
 		// a biller will do his job until there are no more vehicles on the road map
 		while (!isRoadMapEmpty()){
-			for (RoadSection rs : roadsToObserve){
-				printBill(rs);
+			for (Road r : Simulator.roadMap){
+				for (RoadSection rs : r.listOfRoadSections()){
+					printBill(rs);
+				}
 			}
 			try {
 				Thread.sleep(BREAKTIME);
@@ -81,7 +65,6 @@ public class Biller implements RoadSectionObserver, Runnable{
 				e.printStackTrace();
 			}
 		}
-		//tRecord.remove(this);
 	}
 	
 	@Override

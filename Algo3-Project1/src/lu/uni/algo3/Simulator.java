@@ -12,7 +12,7 @@ public class Simulator {
 	
 	public static List<Road> roadMap;
 	public static List<Vehicle> listOfVehicles;
-	public static List<Biller> listOfBillers;
+	public static Biller theBiller;
 	public static List<RescueWorker> listOfRescueWorkers;
 	public static List<PoliceOfficer> listOfPoliceOfficers;
 	public static List <TrafficPlanner> listOfTrafficPlanners;
@@ -37,10 +37,6 @@ public class Simulator {
 			(new Thread(v)).start();
 		}
 		
-		for (Biller b : listOfBillers){
-			(new Thread(b)).start();
-		}
-		
 		for (PoliceOfficer po : listOfPoliceOfficers){
 			(new Thread(po)).start();
 		}
@@ -52,6 +48,8 @@ public class Simulator {
 		for (TrafficPlanner tp : listOfTrafficPlanners){
 			(new Thread(tp)).start();
 		}
+		
+		new Thread(theBiller).start();
 	}
 	
 	public static void uploadLuxRoadMap(){
@@ -229,9 +227,6 @@ public class Simulator {
 	
 	public static void recruteWorkers(){
 		for (Road r : roadMap){
-			listOfBillers = new ArrayList<Biller>();
-			Biller b = new Biller (r.listOfRoadSections());
-			listOfBillers.add(b);
 			listOfRescueWorkers = new ArrayList<RescueWorker>();
 			RescueWorker rw = new RescueWorker(r.listOfRoadSections());
 			listOfRescueWorkers.add(rw);
@@ -242,6 +237,7 @@ public class Simulator {
 			TrafficPlanner tp = new TrafficPlanner(r.listOfRoadSections());
 			listOfTrafficPlanners.add(tp);
 		}
+		theBiller = new Biller();
 	}
 	
 }
