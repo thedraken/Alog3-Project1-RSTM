@@ -41,7 +41,7 @@ public class Biller implements Runnable{
 	
 	//checks if all the vehicles have left the road map
 	public boolean isRoadMapEmpty(){
-		return Predicates.filterThreads(Simulator.listOfCarThreads, Predicates.runningThreads(Simulator.listOfCarThreads)).size() > 0;
+		return Predicates.filterThreads(Simulator.listOfCarThreads, Predicates.runningThreads(Simulator.listOfCarThreads)).size() == 0;
 	}
 	
 	@Override
