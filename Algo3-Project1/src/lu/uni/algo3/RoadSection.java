@@ -30,7 +30,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		this._roadContinutesAfterSection = true;
 	}
 	public RoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam, Road roadIsWith) throws OutOfRangeException{
-		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
+		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam, roadIsWith);
 		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
