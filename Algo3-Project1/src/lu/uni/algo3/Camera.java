@@ -35,17 +35,16 @@ public class Camera implements Comparable<Camera> {
 	public void setLocation(RoadSection rs){
 		this._location = rs;
 	}
+	//Returns randomanlly if a camera is working. We work on camera's breaking 1% of the time
 	public boolean isWorking(){
 		if (working){
 			int value = Utils.returnRandomInt(0, 100);
-			//We assume cameras will be broken 1% of the time
 			if (value <= 1)
-			{
 				working = false;
-			}
 		}
 		return working;
 	}
+	//Attempts to fix a camera, will succeed 90% of the time
 	public boolean fixCamera(){
 		//90% chance to fix the camera
 		int value = Utils.returnRandomInt(0, 100);
@@ -57,6 +56,7 @@ public class Camera implements Comparable<Camera> {
 	public Type type(){
 		return this._type;
 	}
+	//A warning message to be displayed on the road
 	private String _warningMessage = null;
 	public synchronized String WarningMessage(){
 		if (_warningMessage == null)
@@ -64,6 +64,7 @@ public class Camera implements Comparable<Camera> {
 		else
 			return _warningMessage;
 	}
+	//The vehciles within the camera area, this is accquired from the assoicated road section
 	public HashSet<Vehicle> vehiclesNowPassing(){
 		return this.location().getAllVehiclesInside();
 	}
@@ -71,16 +72,19 @@ public class Camera implements Comparable<Camera> {
 	public HashSet<Photograph> photosTaken(){
 		return this._photosTaken;
 	}
+	//Creates a new photo of a car passing through
 	public void capturePhoto(Vehicle v) throws OutOfRangeException{
 		Calendar cal = Calendar.getInstance();
 		Photograph p = new Photograph(this.iD(), cal.getTime(), v);
 		this._photosTaken.add(p);
 	}
+	//A method to identify cars in a photo, not being used in this version
 	public void identifyVehicle(Photograph p){
 		@SuppressWarnings("unchecked")
 		List<Vehicle> listV = (List<Vehicle>)Utils.hashSetToArrayList(_location.getAllVehiclesInside());
 		p.setVehicle(listV.get(Utils.returnRandomInt(0, listV.size()-1)));
 	}
+	//A list of all cars that have stopped inside the current camera's roadsection
 	public List<Vehicle> stationaryVehicles(){
 		List<Vehicle> stoppedVehicles = new ArrayList<Vehicle>();
 		for(Vehicle v: _location.getAllVehiclesInside()){
@@ -94,6 +98,7 @@ public class Camera implements Comparable<Camera> {
 		if (!this._location.alreadyInside(v))
 			this._location.insertVehicle(v);
 	}*/
+	//Prints the current warning message associated with the camera
 	public void displayWarning(String s){
 		this._warningMessage = s;
 		System.out.println("Camera " + this._id + " has reported a warning: " + s);
