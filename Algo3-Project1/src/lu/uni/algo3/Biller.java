@@ -25,7 +25,7 @@ public class Biller implements Runnable{
 		this.billedCars = new HashSet<Vehicle>();
 	}
 	
-	public void printBill(RoadSection rs){
+	public void printBill(){
 		for (Vehicle v : Simulator.listOfVehicles){
 			if (v.getTollRecord() != null && v.getTollRecord().ExitTime() != null && !billedCars.contains(v)){
 				try {
@@ -48,11 +48,7 @@ public class Biller implements Runnable{
 	public void run() {
 		// a biller will do his job until there are no more vehicles on the road map
 		while (!isRoadMapEmpty()){
-			for (Road r : Simulator.roadMap){
-				for (RoadSection rs : r.listOfRoadSections()){
-					printBill(rs);
-				}
-			}
+			printBill();
 			try {
 				Thread.sleep(BREAKTIME);
 			} catch (InterruptedException e) {
@@ -65,11 +61,7 @@ public class Biller implements Runnable{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		for (Road r : Simulator.roadMap){
-			for (RoadSection rs : r.listOfRoadSections()){
-				printBill(rs);
-			}
-		}
+		printBill();
 	}
 	
 	@Override
