@@ -17,7 +17,6 @@ public class Camera implements Comparable<Camera> {
 	public Camera(Type type) throws OutOfRangeException{
 		_id = SQLIndexer.getInstance().getNewID(SQLType.Camera);
 		this._type = type;
-		
 		this._photosTaken = new HashSet<Photograph>();
 		hashCodeExtra = Utils.returnRandomInt();
 	}

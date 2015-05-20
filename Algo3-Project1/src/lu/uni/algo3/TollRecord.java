@@ -12,18 +12,18 @@ public class TollRecord implements Comparable<TollRecord> {
 	private Bill _bill;
 	private int _id;
 	private Vehicle _vehicle;
-	private ArrayList<VehicleJourney> _listOfJourneys;
 	private DateTime _entryTime;
 	private DateTime _exitTime;
 	private boolean hasExited = false;
 	private int _hashExtra;
-	public TollRecord(Vehicle vehicle, Camera entry, DateTime dateTimePassedCamera){
+	private ArrayList<RoadSection> _listOfRoadSectionsTravelled;
+	public TollRecord(Vehicle vehicle, RoadSection entry, DateTime dateTimePassedCamera){
 		this._vehicle = vehicle;
 		_entryTime = new DateTime();
-		_listOfJourneys = new ArrayList<VehicleJourney>();
-		_listOfJourneys.add(new VehicleJourney(entry.location(), dateTimePassedCamera));
 		_exitTime = null;
-		_hashExtra = Utils.returnRandomInt(); 
+		_hashExtra = Utils.returnRandomInt();
+		this._listOfRoadSectionsTravelled = new ArrayList<RoadSection>();
+		_listOfRoadSectionsTravelled.add(entry);
 	}
 	public int ID(){
 		return _id;
@@ -37,16 +37,16 @@ public class TollRecord implements Comparable<TollRecord> {
 	public DateTime ExitTime(){
 		return _exitTime;
 	}
-	public synchronized void addRoadSection(Camera c, DateTime dateTimePassedCamera){
+	public synchronized void addRoadSection(RoadSection rs){
 		if (!hasExited)
-			_listOfJourneys.add(new VehicleJourney(c.location(), dateTimePassedCamera));
+			_listOfRoadSectionsTravelled.add(rs);
 	}
-	public synchronized ArrayList<VehicleJourney> ListOfVehicleJourneys(){
-		return this._listOfJourneys;
+	public synchronized ArrayList<RoadSection> ListOfRoadSectionsTranversed(){
+		return this._listOfRoadSectionsTravelled;
 	}
-	public synchronized void setExit(Camera exit, DateTime dateTimePassedCamera){
+	public synchronized void setExit(RoadSection exit){
 		this._exitTime = new DateTime();
-		this._listOfJourneys.add(new VehicleJourney(exit.location(), dateTimePassedCamera));
+		this._listOfRoadSectionsTravelled.add(exit);
 		hasExited = true;
 	}
 	public Bill generateBill() throws TollIsNotCompleteException{
@@ -54,29 +54,16 @@ public class TollRecord implements Comparable<TollRecord> {
 			throw new TollIsNotCompleteException(this._id, this._vehicle);
 		if (_bill == null){
 			double totalDistanceTravelled = 0;
-			for(VehicleJourney vj : ListOfVehicleJourneys())
-				totalDistanceTravelled+= vj.RoadSectionTravelled().distance();
+			for(RoadSection rs : ListOfRoadSectionsTranversed())
+				totalDistanceTravelled+= rs.distance();
 			Interval i = new Interval(this.EntryTime(), this.ExitTime());
 			_bill = new Bill(totalDistanceTravelled, i);
 		}
 		return _bill;
 	}
 	public boolean speedViolation(){
-		DateTime firstDate = null;
-		DateTime secondDate;
-		for(VehicleJourney vj: ListOfVehicleJourneys()){
-			secondDate = vj.DateTimePassedCamera();
-			if (firstDate != null){
-				Interval i = new Interval(firstDate, secondDate);
-				long milliseconds = i.toDurationMillis();
-				double hours = milliseconds / (1000.0 * 60.0 * 60.0);
-				if (vj.RoadSectionTravelled().distance() / hours > vj.RoadSectionTravelled().speedLimit())
-					return true;
-			}
-			firstDate = vj.DateTimePassedCamera();
-		}
-		return false;
-		
+		//We work on a 5% chance of a speed violation
+		return (Utils.returnRandomInt(0, 100) <= 5);
 	}
 	@Override
 	public boolean equals(Object o){
