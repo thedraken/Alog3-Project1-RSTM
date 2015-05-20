@@ -29,8 +29,9 @@ public class Simulator {
 		
 		generateCars();
 		
+		
 		for (Vehicle v : listOfVehicles){
-			v.run();
+				(new Thread(v)).start();
 		}
 		
 	}
@@ -49,6 +50,7 @@ public class Simulator {
 				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r1.insertRoadSection(rs);
+					System.out.println("Creating road section with id: " + rs.number() + ", belonging to road: " + r1.name());
 				} catch (ObjectExistsInCollectionException e) {
 					System.out.println("Unable to insert road section into road "+ r1.name() +", please see error message below");
 					e.printStackTrace();
@@ -68,7 +70,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r2.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {
@@ -90,7 +92,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r3.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {
@@ -112,7 +114,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r4.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {
@@ -134,7 +136,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r5.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {
@@ -156,7 +158,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r6.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {
@@ -198,7 +200,7 @@ public class Simulator {
 	
 	public static void generateCars(){
 		listOfVehicles = new ArrayList<Vehicle>();
-		int numberOfCarsToGenerate = Utils.returnRandomInt(50, 100);
+		int numberOfCarsToGenerate = 2;//Utils.returnRandomInt(50, 100);
 		for(int i = 0; i < numberOfCarsToGenerate; i++){
 			Vehicle v = new Vehicle(Utils.returnRandomLicensePlate(), Utils.randomCategory());
 			listOfVehicles.add(v);

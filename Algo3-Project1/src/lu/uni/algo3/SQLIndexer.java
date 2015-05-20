@@ -67,4 +67,8 @@ public class SQLIndexer {
 		}
 		throw new OutOfRangeException(-1);
 	}
+	
+	public int getNumberOfRoadSections(){
+		return _roadSectionID;
+	}
 }

@@ -32,9 +32,9 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private boolean exitRoadMap;
 	private TollRecord tollR;
 	
-	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
+	//minimum (1 sec) and maximum time (5 sec) a vehicle takes to go from one roadSection to the next
 	private static final int MINCARWAITTIME = 1000;
-	private static final int MAXCARWAITTIME = 10000;
+	private static final int MAXCARWAITTIME = 5000;
 	//the time a car stops due to malfunction/accident
 	private static final int CARSTOPTIME = 15000;
 	
@@ -126,7 +126,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public void run() {
 		//enter roadMap
 		// random selection of starting point for vehicle
-		int roadSectionNum = Utils.returnRandomInt(1, Simulator.TOTALNUMBEROFROADSECTIONS);
+		int roadSectionNum = Utils.returnRandomInt(1, SQLIndexer.getInstance().getNumberOfRoadSections());
 		for (Road r : Simulator.roadMap){
 			List<RoadSection> list = Predicates.filterRoadSections(r.listOfRoadSections(), Predicates.roadSectionByNumber(roadSectionNum));
 			if (list.size() > 0){
