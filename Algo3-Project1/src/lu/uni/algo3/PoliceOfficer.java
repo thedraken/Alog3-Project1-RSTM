@@ -45,7 +45,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	
 	public void getSpeedViolations(RoadSection rs){
 		for (Vehicle v : rs.getAllVehiclesInside()){
-			if (v.getTollRecord().speedViolation()){
+			if (v.getTollRecord().speedViolation(rs)){
 				System.out.println(this.toString() + " " + v + " speeding on " + rs + " !");
 			}
 		}
