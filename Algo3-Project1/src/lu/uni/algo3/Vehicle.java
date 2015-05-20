@@ -109,12 +109,12 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		return exitRoadMap;
 	}
 	
-	public void changePosition(Road r, RoadSection rs){
+	public void changePosition(RoadSection rs){
 		try {
 			currentPosition.removeVehicle(this);
 			rs.insertVehicle(this);
 			currentPosition = rs;
-			System.out.println(this.toString() +" changing to section "+ rs.number() + " on road " + r.name() );
+			System.out.println(this.toString() +" changing to section "+ rs.number() + " on road " + rs.road().name() );
 		} catch (ExceedMaxOccupationException e) {
 			System.err.println(this.toString() + "\n" + e.getMessage());
 		} catch (ObjectExistsInCollectionException e) {
@@ -206,7 +206,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 						
 						while(it.hasNext()){
 							if (it.next().equals(currentPosition) && it.hasNext()){
-								changePosition(r,it.next());
+								changePosition(it.next());
 								success = true;
 							}
 						}
@@ -219,7 +219,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 						
 						while(it.hasPrevious()){
 							if (it.previous().equals(currentPosition) && it.hasPrevious()){
-								changePosition(r, it.previous());
+								changePosition(it.previous());
 								success = true;
 							}
 						}
@@ -243,7 +243,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 						if (currentRS.equals(currentPosition) && !currentRS.connectionToOtherRoadSections().isEmpty()){
 							//since the order of access to HashSet elements is not guaranteed, this will be kind of a random choice
 							for (RoadSection rs : currentRS.connectionToOtherRoadSections()){
-								changePosition(r, rs);
+								changePosition(rs);
 								break;
 							}
 							success = true;
