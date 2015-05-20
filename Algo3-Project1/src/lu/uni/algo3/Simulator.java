@@ -46,7 +46,7 @@ public class Simulator {
 				int maxOccupation = Utils.returnRandomInt(5, 15);
 				double distanceOfRoadSection = Utils.returnRandomDouble(2, 30);
 				Camera cam = new Camera(Type.OnRoad);
-				RoadSection rs = new RoadSection(i, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+				RoadSection rs = new RoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 				try {
 					r1.insertRoadSection(rs);
 				} catch (ObjectExistsInCollectionException e) {

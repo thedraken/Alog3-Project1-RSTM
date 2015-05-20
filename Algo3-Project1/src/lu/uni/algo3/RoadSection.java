@@ -2,10 +2,13 @@ package lu.uni.algo3;
 
 import java.util.HashSet;
 import java.util.List;
+
 import lu.uni.algo3.Predicates;
+import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
 import lu.uni.algo3.exceptions.ExceedMaxOccupationException;
 import lu.uni.algo3.exceptions.ObjectExistsInCollectionException;
+import lu.uni.algo3.exceptions.OutOfRangeException;
 import lu.uni.algo3.utils.Utils;
 
 public class RoadSection implements Comparable<RoadSection> {
@@ -20,19 +23,19 @@ public class RoadSection implements Comparable<RoadSection> {
 	private int hashCodeExtra;
 	private double _distance;
 	private Camera _camera;
-	public RoadSection(int number, int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection, Camera cam){
-		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+	public RoadSection(int speedLimit, int maxOccupation, HashSet<RoadSection> connectionToOtherRoadSections, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
+		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 		this._connectionToOtherRoadSections = connectionToOtherRoadSections;
 		this._roadContinutesAfterSection = true;
 		
 	}
-	public RoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam){
-		baseRoadSection(number, speedLimit, maxOccupation, distanceOfRoadSection, cam);
+	public RoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
+		baseRoadSection(speedLimit, maxOccupation, distanceOfRoadSection, cam);
 		this._connectionToOtherRoadSections = new HashSet<RoadSection>();
 		this._roadContinutesAfterSection = false;
 	}
-	private void baseRoadSection(int number, int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam){
-		this._number = number;
+	private void baseRoadSection(int speedLimit, int maxOccupation, double distanceOfRoadSection, Camera cam) throws OutOfRangeException{
+		this._number = SQLIndexer.getInstance().getNewID(SQLType.RoadSection);
 		this._speedLimit = speedLimit;
 		this._maxOccupation = maxOccupation;
 		this._listOfObservers = new HashSet<RoadSectionObserver>();

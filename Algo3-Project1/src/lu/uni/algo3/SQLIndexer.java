@@ -23,6 +23,7 @@ public class SQLIndexer {
 	private int _rescueWorkerID = 0;
 	private int _policeOfficerID = 0;
 	private int _billerID = 0;
+	private int _roadSectionID = 0;
 	public enum SQLType{
 		Vehicle,
 		Country,
@@ -34,7 +35,8 @@ public class SQLIndexer {
 		TrafficPlanner,
 		RescueWorker,
 		PoliceOfficer,
-		Biller
+		Biller,
+		RoadSection
 	}
 	public int getNewID(SQLType type) throws OutOfRangeException{
 		switch(type){
@@ -60,6 +62,8 @@ public class SQLIndexer {
 			return ++_policeOfficerID;
 		case Biller:
 			return ++_billerID;
+		case RoadSection:
+			return ++_roadSectionID;
 		}
 		throw new OutOfRangeException(-1);
 	}
