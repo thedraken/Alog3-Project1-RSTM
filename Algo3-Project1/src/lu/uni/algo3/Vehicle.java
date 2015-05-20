@@ -186,7 +186,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		int behavior = 2;
 		//the behavior of the vehicle is randomly generated
 		//the vehicle has 70% probability of staying on the same road, if possible
-		if (Utils.returnRandomBoolean(0.7)){
+		if (Utils.returnRandomBoolean(0.8)){
 			behavior = 0;
 		}
 		else {
@@ -195,7 +195,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			if (Utils.returnRandomBoolean(0.5) && !changedRoadLastTime){
 				behavior = 1;
 			}
-			else if (Utils.returnRandomBoolean(0.1))
+			else if (changedRoadLastTime && Utils.returnRandomBoolean(0.1))
 				behavior = 1;
 		}
 		
