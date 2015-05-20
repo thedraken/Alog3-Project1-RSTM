@@ -39,33 +39,44 @@ public class TollRecord implements Comparable<TollRecord> {
 	public DateTime ExitTime(){
 		return _exitTime;
 	}
+	//Adds a road section to the toll record, the car has travelled further
 	public synchronized void addRoadSection(RoadSection rs){
+		//We can't add it if the car has already left the toll system
 		if (!hasExited){
 			_listOfRoadSectionsTravelled.add(rs);
+			//5% of the time a car will be speeding and we will catch them
 			_speedViolation.put(rs, Utils.returnRandomInt(0, 100) < 5);
 		}
 	}
+	//Total list of roadsections the car has travelled over during his entire joruney
 	public synchronized ArrayList<RoadSection> ListOfRoadSectionsTranversed(){
 		return this._listOfRoadSectionsTravelled;
 	}
+	//The car is now leaving the motorway
 	public synchronized void setExit(RoadSection exit){
 		this._exitTime = new DateTime();
+		//Just make sure the last road section was added to the list
 		if (_listOfRoadSectionsTravelled.get(_listOfRoadSectionsTravelled.size()-1) != exit)
 			addRoadSection(exit);
 		hasExited = true;
 	}
+	//Generate the bill for the biller
 	public Bill generateBill() throws TollIsNotCompleteException{
+		//We can only generate it when the driver has left the toll system
 		if (!hasExited)
 			throw new TollIsNotCompleteException(this._id, this._vehicle);
 		if (_bill == null){
 			double totalDistanceTravelled = 0;
+			//Get the total distance travelled
 			for(RoadSection rs : ListOfRoadSectionsTranversed())
 				totalDistanceTravelled+= rs.distance();
+			//Not used any more, was going to work out if car had sped, but working on real time isn't practical
 			Interval i = new Interval(this.EntryTime(), this.ExitTime());
 			_bill = new Bill(totalDistanceTravelled, i);
 		}
 		return _bill;
 	}
+	//Checks the hashmap if any key values matches the roadsectioned queried and the value is a boolean of true. If so, they sped on that roadsection
 	public synchronized boolean speedViolation(RoadSection rs){
 		return _speedViolation.entrySet().stream().filter(p -> p.getValue() && p.getKey() == rs).count() > 0;
 	}
