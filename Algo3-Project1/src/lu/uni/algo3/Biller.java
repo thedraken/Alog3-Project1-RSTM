@@ -65,6 +65,17 @@ public class Biller implements Runnable{
 				e.printStackTrace();
 			}
 		}
+		//bill the last car that has exited
+		try {
+			Thread.sleep(BREAKTIME);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		for (Road r : Simulator.roadMap){
+			for (RoadSection rs : r.listOfRoadSections()){
+				printBill(rs);
+			}
+		}
 	}
 	
 	@Override
