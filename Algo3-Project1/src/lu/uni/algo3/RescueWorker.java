@@ -12,7 +12,7 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 	
 	private int id;
 	private List<RoadSection> roadsToObserve;
-	
+	private boolean isCameraWorking = true;
 	private final int BREAKTIME = 5000; 
 	
 	public RescueWorker(ArrayList<RoadSection> roadsToObserve){
@@ -74,10 +74,24 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 	}
 	
 	public void getPossibleAccident(RoadSection rs){
-		if (!rs.getCamera().stationaryVehicles().isEmpty()){
-			for (Vehicle v : rs.getCamera().stationaryVehicles()){
-				System.out.println(this.toString() + " " + v + " stopped on " + rs);
-				checkTrafficTo(rs);
+		if (rs.getCamera().isWorking()){
+			if (!rs.getCamera().stationaryVehicles().isEmpty()){
+				for (Vehicle v : rs.getCamera().stationaryVehicles()){
+					System.out.println(this.toString() + " " + v + " stopped on " + rs);
+					checkTrafficTo(rs);
+				}
+			}
+		}
+		else{
+			if (isCameraWorking){
+				System.out.println(this.toString() + " " + rs.getCamera().toString() + " has stopped working, getting someone to repair it");
+				isCameraWorking = false;
+			}
+			else
+			{
+				isCameraWorking = rs.getCamera().fixCamera();
+				if (isCameraWorking)
+					System.out.println(this.toString() + " " + rs.getCamera().toString() + " has been fixed");
 			}
 		}
 	}
