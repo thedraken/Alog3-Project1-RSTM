@@ -26,6 +26,8 @@ public class Camera implements Comparable<Camera> {
 	public int iD(){
 		return this._id;
 	}
+	private boolean hasBeenFixed = true;
+	private boolean working = true;
 	private int hashCodeExtra;
 	private RoadSection _location;
 	public RoadSection location(){
@@ -35,9 +37,16 @@ public class Camera implements Comparable<Camera> {
 		this._location = rs;
 	}
 	public boolean isWorking(){
-		double value = Utils.returnRandomDouble(0, 100);
-		//We assume cameras will be broken 1% of the time
-		return (value > 0.01);
+		if (working){
+			double value = Utils.returnRandomInt(0, 100);
+			//We assume cameras will be broken 1% of the time
+			if (value <= 1)
+			{
+				hasBeenFixed = false;
+				working = false;
+			}
+		}
+		return working;
 	}
 	private Type _type;
 	public Type type(){
