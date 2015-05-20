@@ -9,6 +9,7 @@ public class MissingTollRecordException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = -4314416204842204144L;
+	//If we try to access a tollrecord and it doesn't exisit, this is thrown
 	public MissingTollRecordException(Vehicle v, Camera c){
 		_message = "Cannot find an open toll record for vehicle " + v.getLicencePlate() + " at camera " + c.iD();
 	}
