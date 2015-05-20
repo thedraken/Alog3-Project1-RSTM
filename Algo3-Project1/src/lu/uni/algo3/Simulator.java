@@ -11,6 +11,7 @@ import lu.uni.algo3.utils.Utils;
 public class Simulator {
 	
 	public static List<Road> roadMap;
+	public static List<Vehicle> listOfVehicles;
 	
 	//just putting some number until we decide
 	public static final int NUMBEROFROADSECTIONSA1 = 4;
@@ -21,6 +22,18 @@ public class Simulator {
 	public static final int NUMBEROFROADSECTIONSA13 = 4;
 	public static final int TOTALNUMBEROFROADSECTIONS = 19;
 	
+	
+	public static void main(String[] args){
+		
+		uploadLuxRoadMap();
+		
+		generateCars();
+		
+		for (Vehicle v : listOfVehicles){
+			v.run();
+		}
+		
+	}
 	
 	public static void uploadLuxRoadMap(){
 		roadMap = new ArrayList<Road>();
@@ -181,6 +194,17 @@ public class Simulator {
 		a6RS12.addRoadSectionConnection(a4RS8);
 		a4RS10.addRoadSectionConnection(a13RS19);
 		a13RS19.addRoadSectionConnection(a4RS10);
+	}
+	
+	public static void generateCars(){
+		listOfVehicles = new ArrayList<Vehicle>();
+		int numberOfCarsToGenerate = Utils.returnRandomInt(50, 100);
+		for(int i = 0; i < numberOfCarsToGenerate; i++){
+			Vehicle v = new Vehicle(Utils.returnRandomLicensePlate(), Utils.randomCategory());
+			listOfVehicles.add(v);
+			System.out.println("Created the vehicle " + v.getID() + " with a license plate of " + v.getLicencePlate() + " and a category of " + v.getCategory());
+		}
+		System.out.println("Created  a total of " + numberOfCarsToGenerate + " cars");
 	}
 	
 	
