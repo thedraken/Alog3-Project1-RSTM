@@ -127,18 +127,20 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		//enter roadMap
 		// random selection of starting point for vehicle
 		int roadSectionNum = Utils.returnRandomInt(1, SQLIndexer.getInstance().getNumberOfRoadSections());
-		for (Road r : Simulator.roadMap){
-			List<RoadSection> list = Predicates.filterRoadSections(r.listOfRoadSections(), Predicates.roadSectionByNumber(roadSectionNum));
-			if (list.size() > 0){
-				try {
-					RoadSection rs = list.get(0);
-					rs.insertVehicle(this);
-					this.currentPosition = rs;
-					System.out.println(this.toString() + " Entering road " + r.name() +" at section "+ rs.number());
-				} catch (ExceedMaxOccupationException e) {
-					System.err.println(this.toString() + "\n" + e.getMessage());
-				} catch (ObjectExistsInCollectionException e) {
-					System.err.println(this.toString() + "\n" + e.getMessage());
+		while(currentPosition == null){
+			for (Road r : Simulator.roadMap){
+				List<RoadSection> list = Predicates.filterRoadSections(r.listOfRoadSections(), Predicates.roadSectionByNumber(roadSectionNum));
+				if (list.size() > 0){
+					try {
+						RoadSection rs = list.get(0);
+						rs.insertVehicle(this);
+						this.currentPosition = rs;
+						System.out.println(this.toString() + " Entering road " + r.name() +" at section "+ rs.number());
+					} catch (ExceedMaxOccupationException e) {
+						System.err.println(this.toString() + "\n" + e.getMessage());
+					} catch (ObjectExistsInCollectionException e) {
+						System.err.println(this.toString() + "\n" + e.getMessage());
+					}
 				}
 			}
 		}
