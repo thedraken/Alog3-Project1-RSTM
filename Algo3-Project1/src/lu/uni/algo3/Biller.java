@@ -24,7 +24,10 @@ public class Biller implements Runnable{
 		}
 		this.billedCars = new HashSet<Vehicle>();
 	}
-	
+	//the biller will go through the list of generated vehicles and check if they already have
+	//a toll record assigned, if that toll record is closed (they have already exited the road map) and
+	//if they have not yet been billed.
+	//in that case a bill will be issued for the vehicle
 	public void printBill(){
 		for (Vehicle v : Simulator.listOfVehicles){
 			if (v.getTollRecord() != null && v.getTollRecord().ExitTime() != null && !billedCars.contains(v)){

@@ -18,7 +18,6 @@ public class Simulator {
 	public static List <TrafficPlanner> listOfTrafficPlanners;
 	public static List<Thread> listOfCarThreads;
 	
-	//just putting some number until we decide
 	public static final int NUMBEROFROADSECTIONSA1 = 4;
 	public static final int NUMBEROFROADSECTIONSA3 = 3;
 	public static final int NUMBEROFROADSECTIONSA4 = 3;
@@ -53,6 +52,7 @@ public class Simulator {
 		new Thread(theBiller).start();
 	}
 	
+	//trying to set up a road map that resembles Luxembourg's highway road map
 	public static void uploadLuxRoadMap(){
 		roadMap = new ArrayList<Road>();
 		try {
@@ -109,7 +109,7 @@ public class Simulator {
 			System.out.println("Unable to create road, please see error message below");
 			e.printStackTrace();
 		}
-		//setting up connections between road sections
+		//setting up connections between road sections:
 		//A1 has connections to A3 and A6 from it's 4th road section
 		RoadSection a1RS4 = roadMap.get(0).listOfRoadSections().get(3);
 		RoadSection a3RS5 = roadMap.get(1).listOfRoadSections().get(0);
@@ -136,6 +136,9 @@ public class Simulator {
 		a13RS19.addRoadSectionConnection(a4RS10);
 	}
 
+	//road sections will have a speed limit between 90 and 130 km/h,
+	//an occupation limit of 10 to 20 vehicles and a distance of 2 to 30
+	//in this version of the system all cameras are on the road
 	private static void generateRoadSections(Road r,
 			int numberOfRoadSectionsToCreate) throws OutOfRangeException {
 		for(int i = 0; i < numberOfRoadSectionsToCreate; i++){
@@ -155,6 +158,8 @@ public class Simulator {
 		}
 	}
 	
+	//the simulator will generate between 50 and 100 vehicles to run on the roads
+	//they will be assigned a random license plate and a random category
 	public static void generateCars(){
 		listOfVehicles = new ArrayList<Vehicle>();
 		int numberOfCarsToGenerate = Utils.returnRandomInt(50, 100);
@@ -166,6 +171,8 @@ public class Simulator {
 		System.out.println("Created  a total of " + numberOfCarsToGenerate + " cars");
 	}
 	
+	//rescue workers, police officers and traffic planners will be assigned one road to watch over
+	//in this version of the system, a unique biller is responsible for the entire road map
 	public static void recruteWorkers(){
 		for (Road r : roadMap){
 			listOfRescueWorkers = new ArrayList<RescueWorker>();
