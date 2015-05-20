@@ -118,7 +118,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		int currentCarsOnRoad = _listOfVehiclesInside.size();
 		double percentage = (double)currentCarsOnRoad / (double)_maxOccupation;
 		return percentage > 0.5;
-		
+
 	}
 	public synchronized boolean alreadyInside(Vehicle v){
 		return _listOfVehiclesInside.contains(v);
@@ -139,8 +139,8 @@ public class RoadSection implements Comparable<RoadSection> {
 		this._connectionToOtherRoadSections.add(rs);
 		this._roadContinutesAfterSection = true;
 	}
-	@Override	
-	public synchronized boolean equals(Object o){
+	@Override
+	public boolean equals(Object o){
 		if (!(o instanceof RoadSection))
 			return false;
 		RoadSection rs = (RoadSection)o;
@@ -159,7 +159,7 @@ public class RoadSection implements Comparable<RoadSection> {
 		return true;
 	}
 	@Override
-	public synchronized int compareTo(RoadSection o) {
+	public int compareTo(RoadSection o) {
 		if (_number < o.number())
 			return -1;
 		if (_number > o.number())
