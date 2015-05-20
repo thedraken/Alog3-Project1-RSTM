@@ -1,11 +1,8 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
@@ -15,11 +12,11 @@ import lu.uni.algo3.utils.Utils;
 public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	
 	private int id;
-	private Set<RoadSection> roadsToObserve;
+	private List<RoadSection> roadsToObserve;
 	
 	private final int BREAKTIME = 5000; 
 	
-	public PoliceOfficer(HashSet<RoadSection> roadsToObserve){
+	public PoliceOfficer(ArrayList<RoadSection> roadsToObserve){
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -30,7 +27,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
-		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
+		this.roadsToObserve = new ArrayList<RoadSection>(roadsToObserve);
 	}
 	
 	public void addRoadSection(RoadSection r){
@@ -100,11 +97,12 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		return photos;
 	}
 	
-	//checks if all the road sections have no vehicles inside
-	public boolean roadIsEmpty(){
-		for (RoadSection rs : roadsToObserve){
-			if (!rs.getAllVehiclesInside().isEmpty()){
-				return false;
+	//checks if all the vehicles have left the road map
+	public boolean isRoadMapEmpty(){
+		for (Road r: Simulator.roadMap){
+			for (RoadSection rs : r.listOfRoadSections()){
+				if (!rs.getAllVehiclesInside().isEmpty())
+					return false;
 			}
 		}
 		return true;
@@ -117,8 +115,8 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 
 	@Override
 	public void run() {
-		//police officers will stop working once there are no more vehicles on the road
-		while (!roadIsEmpty()){
+		//police officers will stop working once there are no more vehicles on the road map
+		while (!isRoadMapEmpty()){
 			//search for a random car on the run...
 			//we select a random road section, then a random vehicle driving on that section based on this:
 			//http://stackoverflow.com/questions/124671/picking-a-random-element-from-a-set

@@ -111,8 +111,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	public void changePosition(RoadSection rs){
 		try {
-			currentPosition.removeVehicle(this);
 			rs.insertVehicle(this);
+			currentPosition.removeVehicle(this);
 			currentPosition = rs;
 			System.out.println(this.toString() +" changing to section "+ rs.number() + " on road " + rs.road().name() );
 		} catch (ExceedMaxOccupationException e) {

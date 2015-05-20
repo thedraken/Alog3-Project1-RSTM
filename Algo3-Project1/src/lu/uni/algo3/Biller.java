@@ -1,8 +1,7 @@
 package lu.uni.algo3;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.exceptions.OutOfRangeException;
@@ -11,11 +10,11 @@ import lu.uni.algo3.exceptions.TollIsNotCompleteException;
 public class Biller implements RoadSectionObserver, Runnable{
 	
 	private int id;
-	private Set<RoadSection> roadsToObserve;
+	private List<RoadSection> roadsToObserve;
 	
 	private final int BREAKTIME = 5000; 
 	
-	public Biller(HashSet<RoadSection> roadsToObserve){
+	public Biller(ArrayList<RoadSection> roadsToObserve){
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -26,7 +25,7 @@ public class Biller implements RoadSectionObserver, Runnable{
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
-		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
+		this.roadsToObserve = new ArrayList<RoadSection>(roadsToObserve);
 	}
 	
 	public void addRoadSection(RoadSection r){
@@ -53,11 +52,12 @@ public class Biller implements RoadSectionObserver, Runnable{
 		}
 	}
 	
-	//checks if all the road sections have no vehicles inside
-	public boolean roadIsEmpty(){
-		for (RoadSection rs : roadsToObserve){
-			if (!rs.getAllVehiclesInside().isEmpty()){
-				return false;
+	//checks if all the vehicles have left the road map
+	public boolean isRoadMapEmpty(){
+		for (Road r: Simulator.roadMap){
+			for (RoadSection rs : r.listOfRoadSections()){
+				if (!rs.getAllVehiclesInside().isEmpty())
+					return false;
 			}
 		}
 		return true;
@@ -70,8 +70,8 @@ public class Biller implements RoadSectionObserver, Runnable{
 
 	@Override
 	public void run() {
-		// a biller will do his job until there are no more vehicles on the road
-		while (!roadIsEmpty()){
+		// a biller will do his job until there are no more vehicles on the road map
+		while (!isRoadMapEmpty()){
 			for (RoadSection rs : roadsToObserve){
 				printBill(rs);
 			}

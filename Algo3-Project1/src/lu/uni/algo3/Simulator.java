@@ -12,6 +12,10 @@ public class Simulator {
 	
 	public static List<Road> roadMap;
 	public static List<Vehicle> listOfVehicles;
+	public static List<Biller> listOfBillers;
+	public static List<RescueWorker> listOfRescueWorkers;
+	public static List<PoliceOfficer> listOfPoliceOfficers;
+	public static List <TrafficPlanner> listOfTrafficPlanners;
 	
 	//just putting some number until we decide
 	public static final int NUMBEROFROADSECTIONSA1 = 4;
@@ -20,7 +24,6 @@ public class Simulator {
 	public static final int NUMBEROFROADSECTIONSA6 = 3;
 	public static final int NUMBEROFROADSECTIONSA7 = 2;
 	public static final int NUMBEROFROADSECTIONSA13 = 4;
-	public static final int TOTALNUMBEROFROADSECTIONS = 19;
 	
 	
 	public static void main(String[] args){
@@ -28,12 +31,27 @@ public class Simulator {
 		uploadLuxRoadMap();
 		
 		generateCars();
-		
+		recruteWorkers();
 		
 		for (Vehicle v : listOfVehicles){
-				(new Thread(v)).start();
+			(new Thread(v)).start();
 		}
 		
+		for (Biller b : listOfBillers){
+			(new Thread(b)).start();
+		}
+		
+		for (PoliceOfficer po : listOfPoliceOfficers){
+			(new Thread(po)).start();
+		}
+		
+		for (RescueWorker rw : listOfRescueWorkers){
+			(new Thread(rw)).start();
+		}
+		
+		for (TrafficPlanner tp : listOfTrafficPlanners){
+			(new Thread(tp)).start();
+		}
 	}
 	
 	public static void uploadLuxRoadMap(){
@@ -200,7 +218,7 @@ public class Simulator {
 	
 	public static void generateCars(){
 		listOfVehicles = new ArrayList<Vehicle>();
-		int numberOfCarsToGenerate = 2;//Utils.returnRandomInt(50, 100);
+		int numberOfCarsToGenerate = Utils.returnRandomInt(50, 100);
 		for(int i = 0; i < numberOfCarsToGenerate; i++){
 			Vehicle v = new Vehicle(Utils.returnRandomLicensePlate(), Utils.randomCategory());
 			listOfVehicles.add(v);
@@ -209,5 +227,21 @@ public class Simulator {
 		System.out.println("Created  a total of " + numberOfCarsToGenerate + " cars");
 	}
 	
+	public static void recruteWorkers(){
+		for (Road r : roadMap){
+			listOfBillers = new ArrayList<Biller>();
+			Biller b = new Biller (r.listOfRoadSections());
+			listOfBillers.add(b);
+			listOfRescueWorkers = new ArrayList<RescueWorker>();
+			RescueWorker rw = new RescueWorker(r.listOfRoadSections());
+			listOfRescueWorkers.add(rw);
+			listOfPoliceOfficers = new ArrayList<PoliceOfficer>();
+			PoliceOfficer po = new PoliceOfficer(r.listOfRoadSections());
+			listOfPoliceOfficers.add(po);
+			listOfTrafficPlanners = new ArrayList<TrafficPlanner>();
+			TrafficPlanner tp = new TrafficPlanner(r.listOfRoadSections());
+			listOfTrafficPlanners.add(tp);
+		}
+	}
 	
 }

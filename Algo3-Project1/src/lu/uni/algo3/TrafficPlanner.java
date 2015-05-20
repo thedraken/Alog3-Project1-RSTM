@@ -1,10 +1,7 @@
 package lu.uni.algo3;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
 import lu.uni.algo3.Vehicle.Category;
@@ -13,11 +10,11 @@ import lu.uni.algo3.exceptions.OutOfRangeException;
 public class TrafficPlanner implements Runnable, RoadSectionObserver{
 	
 	private int id;
-	private Set<RoadSection> roadsToObserve;
+	private List<RoadSection> roadsToObserve;
 	
 	private final int BREAKTIME = 5000;
 	
-	public TrafficPlanner(HashSet<RoadSection> roadsToObserve){
+	public TrafficPlanner(ArrayList<RoadSection> roadsToObserve){
 		//SQLIndexer is responsible to increment and assign unique IDs
 		SQLIndexer indexer = SQLIndexer.getInstance();
 		try {
@@ -28,7 +25,7 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		for(RoadSection rs : roadsToObserve){
 			rs.registerObserver(this);
 		}
-		this.roadsToObserve = Collections.synchronizedSet(new HashSet<RoadSection>(roadsToObserve));
+		this.roadsToObserve = new ArrayList<RoadSection>(roadsToObserve);
 	}
 	
 	public void addRoadSection(RoadSection r){
@@ -65,11 +62,12 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		}
 	}
 	
-	//checks if all the road sections have no vehicles inside
-	public boolean roadIsEmpty(){
-		for (RoadSection rs : roadsToObserve){
-			if (!rs.getAllVehiclesInside().isEmpty()){
-				return false;
+	//checks if all the vehicles have left the road map
+	public boolean isRoadMapEmpty(){
+		for (Road r: Simulator.roadMap){
+			for (RoadSection rs : r.listOfRoadSections()){
+				if (!rs.getAllVehiclesInside().isEmpty())
+					return false;
 			}
 		}
 		return true;
@@ -82,8 +80,8 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 
 	@Override
 	public void run() {
-		//a traffic planner will do his job until all cars have left the road
-		while(!roadIsEmpty()){
+		//a traffic planner will do his job until all cars have left the road map
+		while(!isRoadMapEmpty()){
 			for (RoadSection rs : roadsToObserve){
 				sendCongestionWarning(rs);
 			}
