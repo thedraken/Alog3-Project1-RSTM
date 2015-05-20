@@ -97,7 +97,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 			//search for a random car on the run...
 			//we select a random road section, then a random vehicle driving on that section based on this:
 			//http://stackoverflow.com/questions/124671/picking-a-random-element-from-a-set
-			int roadSectionItem = Utils.returnRandomInt(0, roadsToObserve.size());
+			int roadSectionItem = Utils.returnRandomInt(0, roadsToObserve.size() -1);
 			int i = 0, j = 0;
 			RoadSection randomRS = null;
 			for (RoadSection rs : roadsToObserve){
@@ -114,7 +114,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 					if (j == vehicleItem){
 						searchVehicle(v, randomRS);
 						System.out.println(this.toString() + " Downloading photographs of " + v + ":");
-						System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
+						//System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
 						break;
 					}
 					j++;
