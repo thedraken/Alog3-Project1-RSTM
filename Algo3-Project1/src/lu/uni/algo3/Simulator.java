@@ -158,7 +158,29 @@ public class Simulator {
 		}
 		//setting up connections between road sections
 		//A1 has connections to A3 and A6 from it's 4th road section
-		
+		RoadSection a1RS4 = roadMap.get(0).listOfRoadSections().get(3);
+		RoadSection a3RS5 = roadMap.get(1).listOfRoadSections().get(0);
+		RoadSection a6RS11 = roadMap.get(3).listOfRoadSections().get(0);
+		a1RS4.addRoadSectionConnection(a3RS5);
+		a1RS4.addRoadSectionConnection(a6RS11);
+		a3RS5.addRoadSectionConnection(a1RS4);
+		a3RS5.addRoadSectionConnection(a6RS11);
+		a6RS11.addRoadSectionConnection(a1RS4);
+		a6RS11.addRoadSectionConnection(a3RS5);
+		//A3 has also a connection to A13
+		RoadSection a3RS6 = roadMap.get(1).listOfRoadSections().get(1);
+		RoadSection a13RS18 = roadMap.get(5).listOfRoadSections().get(2);
+		a3RS6.addRoadSectionConnection(a13RS18);
+		a13RS18.addRoadSectionConnection(a3RS6);
+		//A4 has connections to A6 and A13
+		RoadSection a4RS8 = roadMap.get(2).listOfRoadSections().get(0);
+		RoadSection a4RS10 = roadMap.get(2).listOfRoadSections().get(2);
+		RoadSection a6RS12 = roadMap.get(3).listOfRoadSections().get(1);
+		RoadSection a13RS19 = roadMap.get(5).listOfRoadSections().get(3);
+		a4RS8.addRoadSectionConnection(a6RS12);
+		a6RS12.addRoadSectionConnection(a4RS8);
+		a4RS10.addRoadSectionConnection(a13RS19);
+		a13RS19.addRoadSectionConnection(a4RS10);
 	}
 	
 	
