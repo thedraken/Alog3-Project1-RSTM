@@ -30,11 +30,13 @@ public class Road {
 	public String name(){
 		return this._name;
 	}
+	//A synced method that allows adding of a road section to a road. Throws an exception if it was not done sucessfully
 	public synchronized void insertRoadSection(RoadSection rs) throws ObjectExistsInCollectionException{
 		if (_listOfRoadSections.contains(rs))
 			throw new ObjectExistsInCollectionException();
 		_listOfRoadSections.add(rs);
 	}
+	//A synced method to remove roadsections from a road
 	public synchronized boolean removeRoadSection(RoadSection rs){
 		if (_listOfRoadSections.contains(rs)){
 			_listOfRoadSections.remove(rs);
