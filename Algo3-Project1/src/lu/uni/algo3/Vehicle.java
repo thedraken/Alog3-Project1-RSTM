@@ -236,8 +236,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 				}	
 				if (success){
 					break;
-				}
-				
+				}		
 			//case 1: the vehicle changes road, updating its position to the roadSection of the other road
 			//that has a connection to this one
 			//if no connection to other road exits, we try the next case

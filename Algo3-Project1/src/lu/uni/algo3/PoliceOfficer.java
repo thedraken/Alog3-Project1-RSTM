@@ -2,6 +2,7 @@ package lu.uni.algo3;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import lu.uni.algo3.SQLIndexer.SQLType;
@@ -48,16 +49,8 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		}
 	}
 	
-	public RoadSection searchVehicle(Vehicle car){
-		for (RoadSection rs : roadsToObserve){
-			for (Vehicle v : rs.getAllVehiclesInside()){
-				if (v.equals(car)){
-					System.out.println(this.toString() + " " + v + " found on " + rs + ". Sending unit to pursuit.");
-					return rs;
-				}
-			}
-		}
-		return null;
+	public void searchVehicle(Vehicle car, RoadSection rs){
+		System.out.println(this.toString() + " " + car + " found on " + rs + ". Sending unit to pursuit.");
 	}
 	
 	public List<Vehicle> searchVehiclesByCategory(Category category){
@@ -84,30 +77,17 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		return photos;
 	}
 	
-	public List<Photograph> getPhotosOfCar(Vehicle car){
+	public List<Photograph> getPhotosOfCar(Vehicle car, RoadSection rs){
 		List<Photograph> photos = new ArrayList<Photograph>();
-		for (RoadSection rs : roadsToObserve){
-			for (Photograph p : rs.getCamera().photosTaken()){
-				if (p.vehicle().equals(car)){
-					System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
-					photos.add(p);
-				}
+		for (Photograph p : rs.getCamera().photosTaken()){
+			if (p.vehicle().equals(car)){
+				System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
+				photos.add(p);
 			}
 		}
 		return photos;
 	}
 	
-	//checks if all the vehicles have left the road map
-	public boolean isRoadMapEmpty(){
-		for (Road r: Simulator.roadMap){
-			for (RoadSection rs : r.listOfRoadSections()){
-				if (!rs.getAllVehiclesInside().isEmpty())
-					return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	public void updateRS(RoadSection rs) {
 		getSpeedViolations(rs);
@@ -131,12 +111,13 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				}
 				i++;
 			}
-			int vehicleItem = Utils.returnRandomInt(0, randomRS.getAllVehiclesInside().size());
-			for (Vehicle v : randomRS.getAllVehiclesInside()){
+			HashSet<Vehicle> vehiclesToCheck = randomRS.getAllVehiclesInside();
+			int vehicleItem = Utils.returnRandomInt(0, vehiclesToCheck.size());
+			for (Vehicle v : vehiclesToCheck){
 				if (j == vehicleItem){
-					searchVehicle(v);
+					searchVehicle(v, randomRS);
 					System.out.println(this.toString() + "Downloading photographs of " + v + ":");
-					getPhotosOfCar(v);
+					getPhotosOfCar(v, randomRS);
 					break;
 				}
 				j++;

@@ -62,17 +62,6 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		}
 	}
 	
-	//checks if all the vehicles have left the road map
-	public boolean isRoadMapEmpty(){
-		for (Road r: Simulator.roadMap){
-			for (RoadSection rs : r.listOfRoadSections()){
-				if (!rs.getAllVehiclesInside().isEmpty())
-					return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	public void updateRS(RoadSection rs) {
 		sendCongestionWarning(rs);

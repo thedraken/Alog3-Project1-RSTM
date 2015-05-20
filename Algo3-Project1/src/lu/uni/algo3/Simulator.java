@@ -16,6 +16,7 @@ public class Simulator {
 	public static List<RescueWorker> listOfRescueWorkers;
 	public static List<PoliceOfficer> listOfPoliceOfficers;
 	public static List <TrafficPlanner> listOfTrafficPlanners;
+	public static List<Thread> listOfCarThreads;
 	
 	//just putting some number until we decide
 	public static final int NUMBEROFROADSECTIONSA1 = 4;
@@ -32,11 +33,19 @@ public class Simulator {
 		
 		generateCars();
 		recruteWorkers();
-		
+		listOfCarThreads = new ArrayList<Thread>();
 		for (Vehicle v : listOfVehicles){
-			(new Thread(v)).start();
+			Thread t = new Thread(v);
+			listOfCarThreads.add(t);
+			t.start();
 		}
-		
+		//Wait a second, make sure the roadmap has data in
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (PoliceOfficer po : listOfPoliceOfficers){
 			(new Thread(po)).start();
 		}
@@ -47,12 +56,6 @@ public class Simulator {
 		
 		for (TrafficPlanner tp : listOfTrafficPlanners){
 			(new Thread(tp)).start();
-		}
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		new Thread(theBiller).start();
 	}
@@ -184,5 +187,5 @@ public class Simulator {
 		}
 		theBiller = new Biller();
 	}
-	
+
 }

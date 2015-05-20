@@ -30,4 +30,10 @@ public class Predicates {
 	public static Predicate<RoadSection> ignoreTheseRoadSections(ArrayList<RoadSection> previousTravelled){
 		return p -> !previousTravelled.contains(p);
 	}
+	public static ArrayList<Thread> filterThreads(List<Thread> listOfCarThreads, Predicate<Thread> predicate){
+		return (ArrayList<Thread>) listOfCarThreads.stream().filter(predicate).collect(Collectors.<Thread>toList());
+	}
+	public static Predicate<Thread> runningThreads(List<Thread> listOfCarThreads){
+		return p -> p.isAlive();
+	}
 }
