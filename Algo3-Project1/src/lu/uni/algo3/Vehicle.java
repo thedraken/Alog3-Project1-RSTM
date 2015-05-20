@@ -215,6 +215,8 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 								success = true;
 								changedRoadLastTime = false;
 							}
+							if (success)
+								break;
 						}
 						if (success){
 							break;
