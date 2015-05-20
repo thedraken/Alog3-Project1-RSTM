@@ -24,7 +24,10 @@ public class Predicates {
 	public static Predicate<RoadSection> roadSectionByNumber(int number){
 		return p -> p.number() == number;
 	}
-	public static List<RoadSection> filterRoadSections(ArrayList<RoadSection> arrayList, Predicate<RoadSection> predicate){
-		return arrayList.stream().filter(predicate).collect(Collectors.<RoadSection>toList());
+	public static ArrayList<RoadSection> filterRoadSections(ArrayList<RoadSection> arrayList, Predicate<RoadSection> predicate){
+		return (ArrayList<RoadSection>) arrayList.stream().filter(predicate).collect(Collectors.<RoadSection>toList());
+	}
+	public static Predicate<RoadSection> ignoreTheseRoadSections(ArrayList<RoadSection> previousTravelled){
+		return p -> !previousTravelled.contains(p);
 	}
 }

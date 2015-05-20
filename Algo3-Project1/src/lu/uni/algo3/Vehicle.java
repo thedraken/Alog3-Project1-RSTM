@@ -32,6 +32,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	private boolean stopped;
 	private boolean exitRoadMap;
 	private TollRecord tollR;
+	private boolean changedRoadLastTime = false;
 	
 	//minimum (1 sec) and maximum time (5 sec) a vehicle takes to go from one roadSection to the next
 	private static final int MINCARWAITTIME = 1000;
@@ -184,15 +185,18 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public void endOfRoadSectionBehavior(){
 		int behavior = 2;
 		//the behavior of the vehicle is randomly generated
-		//the vehicle has 60% probability of staying on the same road, if possible
-		if (Utils.returnRandomBoolean(0.6)){
+		//the vehicle has 70% probability of staying on the same road, if possible
+		if (Utils.returnRandomBoolean(0.7)){
 			behavior = 0;
 		}
 		else {
-			//if leaving the current road, he will have 70% probability of changing to another road, if there is one
-			if (Utils.returnRandomBoolean(0.7)){
+			//if leaving the current road, he will have 50% probability of changing to another road, if there is one
+			//Unless the car has previously done a turn in the last move, prevents the car looping too much. This has been set to 30% instead
+			if (Utils.returnRandomBoolean(0.5) && !changedRoadLastTime){
 				behavior = 1;
 			}
+			else if (Utils.returnRandomBoolean(0.1))
+				behavior = 1;
 		}
 		
 		RoadSection currentRS;
@@ -205,11 +209,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 				for (Road r : Simulator.roadMap){
 					if (direction.equals(Direction.ascending)){
 						Iterator<RoadSection> it = r.listOfRoadSections().iterator();
-						
 						while(it.hasNext()){
 							if (it.next().equals(currentPosition) && it.hasNext()){
 								changePosition(it.next());
 								success = true;
+								changedRoadLastTime = false;
 							}
 						}
 						if (success){
@@ -218,11 +222,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					}
 					else{
 						ListIterator<RoadSection> it = r.listOfRoadSections().listIterator(r.listOfRoadSections().size());
-						
 						while(it.hasPrevious()){
 							if (it.previous().equals(currentPosition) && it.hasPrevious()){
 								changePosition(it.previous());
 								success = true;
+								changedRoadLastTime = false;
 							}
 						}
 						if (success){
@@ -243,9 +247,10 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 					while(it.hasNext()){
 						currentRS = it.next();
 						if (currentRS.equals(currentPosition) && !currentRS.connectionToOtherRoadSections().isEmpty()){
-							List<RoadSection> connections = new ArrayList<RoadSection>(currentRS.connectionToOtherRoadSections());
+							ArrayList<RoadSection> connections = new ArrayList<RoadSection>(currentRS.connectionToOtherRoadSections());
 							changePosition(connections.get(Utils.returnRandomInt(0, connections.size()-1)));
 							success = true;
+							changedRoadLastTime = true;
 						}
 					}
 					if (success){
