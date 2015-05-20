@@ -3,6 +3,7 @@ package lu.uni.algo3;
 import lu.uni.algo3.exceptions.OutOfRangeException;
 
 public class SQLIndexer {
+	//A generic class used to create dummy SQL index numbers. Gives the first item a 1 and the next a 2 and so on.
 	private static SQLIndexer instance = null;
 	private SQLIndexer(){
 		
@@ -65,9 +66,10 @@ public class SQLIndexer {
 		case RoadSection:
 			return ++_roadSectionID;
 		}
+		//If we've reached here, we're missing an enum value. Throw an exception so we can fix it
 		throw new OutOfRangeException(-1);
 	}
-	
+	//Used to get the total number of road sections in the entire system. Need for the simulator
 	public int getNumberOfRoadSections(){
 		return _roadSectionID;
 	}
