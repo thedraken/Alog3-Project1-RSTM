@@ -24,12 +24,12 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	}
 	private int id;
 	private String licencePlate;
-	private String transponder = null;
+	private String transponder;
 	private Category category;
 	private RoadSection currentPosition;
 	private Direction direction;
-	private boolean stopped = false;
-	private boolean exitRoadMap = false;
+	private boolean stopped;
+	private boolean exitRoadMap;
 	private TollRecord tollR;
 	
 	//minimum (1 sec) and maximum time (10 sec) a vehicle takes to go from one roadSection to the next
@@ -63,6 +63,11 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		}
 		this.licencePlate = licencePlate;
 		this.category = cat;
+		this.exitRoadMap = false;
+		this.stopped = false;
+		this.tollR = null;
+		this.transponder = null;
+		this.currentPosition = null;
 	}
 	
 	public int getID(){
@@ -98,6 +103,10 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	public void setTollRecord(TollRecord tollR){
 		this.tollR = tollR;
+	}
+	
+	public boolean hasExitedRoadMap(){
+		return exitRoadMap;
 	}
 	
 	public void changePosition(Road r, RoadSection rs){
