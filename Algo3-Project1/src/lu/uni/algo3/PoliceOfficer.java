@@ -77,14 +77,9 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	}
 	
 	public List<Photograph> getPhotosOfCar(Vehicle car, RoadSection rs){
-		List<Photograph> photos = new ArrayList<Photograph>();
-		HashSet<Photograph> hashSetOfPhotos = rs.getCamera().photosTaken(); 
-		for (Photograph p : hashSetOfPhotos){
-			if (p.vehicle().equals(car)){
-				System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
-				photos.add(p);
-			}
-		}
+		List<Photograph> photos = Predicates.filterPhotos(rs.getCamera().photosTaken(), Predicates.photographByVehicle(car));  
+		for (Photograph p : photos)
+			System.out.println(this.toString() + " Date and time of photograph: " + p.dateTime() + " taken on " + rs + ", downloading from: " + p.locationOnDisk());
 		return photos;
 	}
 	

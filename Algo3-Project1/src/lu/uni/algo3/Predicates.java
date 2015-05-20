@@ -36,4 +36,10 @@ public class Predicates {
 	public static Predicate<Thread> runningThreads(List<Thread> listOfCarThreads){
 		return p -> p.isAlive();
 	}
+	public static ArrayList<Photograph> filterPhotos(HashSet<Photograph> hshst, Predicate<Photograph>predicate){
+		return (ArrayList<Photograph>)hshst.stream().filter(predicate).collect(Collectors.<Photograph>toList());
+	}
+	public static Predicate<Photograph> photographByVehicle(Vehicle v){
+		return p -> p.vehicle() == v;
+	}
 }
