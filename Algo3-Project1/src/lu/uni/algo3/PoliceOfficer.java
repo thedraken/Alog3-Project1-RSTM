@@ -40,7 +40,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		r.removeObserver(this);
 		roadsToObserve.remove(r);
 	}
-	
+	//to check if there are vehicles speeding on a given road section
 	public void getSpeedViolations(RoadSection rs){
 		for (Vehicle v : rs.getAllVehiclesInside()){
 			if (v.getTollRecord().speedViolation(rs)){
@@ -53,6 +53,8 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		System.out.println(this.toString() + " " + car + " found on " + rs + ". Sending unit to pursuit.");
 	}
 	
+	//if a police officer is searching for a particular type of vehicle, without further information
+	//he/she will look for all the vehicles belonging to that category currently running on the road
 	public List<Vehicle> searchVehiclesByCategory(Category category){
 		List<Vehicle> vehicleOfCat = new ArrayList<Vehicle>();
 		for (RoadSection rs : roadsToObserve){
@@ -65,7 +67,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		}
 		return vehicleOfCat;
 	}
-	
+	//police officers also have the possibility to search for photographs taken by the cameras on a given time
 	public List<Photograph> getPhotos(Date dateTime){
 		List<Photograph> photos = new ArrayList<Photograph>();
 		for (RoadSection rs : roadsToObserve){
@@ -77,7 +79,8 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 		}
 		return photos;
 	}
-	
+	//when in pursuit of a vehicle, the police officer will ask for all the photos
+	//the cameras have taken of that vehicle
 	public List<Photograph> getPhotosOfCar(Vehicle car, RoadSection rs){
 		List<Photograph> photos = Predicates.filterPhotos(rs.getCamera().photosTaken(), Predicates.photographByVehicle(car));  
 		for (Photograph p : photos)
@@ -87,6 +90,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 	
 	@Override
 	public void updateRS(RoadSection rs) {
+		//police officers are constantly being updated about speed violations occurring on the road
 		getSpeedViolations(rs);
 	}
 
@@ -114,6 +118,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 					if (j == vehicleItem){
 						searchVehicle(v, randomRS);
 						System.out.println(this.toString() + " Downloading photographs of " + v + ":");
+						getPhotosOfCar(v, randomRS);
 						//System.out.println("There were " + getPhotosOfCar(v, randomRS).size() + " photos of the car " + v.toString());
 						break;
 					}
@@ -151,7 +156,7 @@ public class PoliceOfficer implements Runnable, RoadSectionObserver{
 				e.printStackTrace();
 			}
 			*/
-			//look for pictures taken at a given random date/time on random road section???
+			//look for pictures taken at a given random date/time on random road section
 		}
 		
 	}
