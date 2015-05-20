@@ -72,7 +72,8 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 		}
 		return null;
 	}
-	
+	//rescue workers will check with the cameras to locate vehicles stopping on the highway
+	//when a camera is not working it will get repaired
 	public void getPossibleAccident(RoadSection rs){
 		if (rs.getCamera().isWorking()){
 			if (!rs.getCamera().stationaryVehicles().isEmpty()){
@@ -98,6 +99,7 @@ public class RescueWorker implements Runnable, RoadSectionObserver{
 
 	@Override
 	public void updateRS(RoadSection rs) {
+		//rescue workers need to be updated about the general flow of the traffic and about possible accidents
 		if (rs.isBusy())
 			System.out.println(this.toString() + " Attention! Traffic on " + rs + " is getting busy !");
 		getPossibleAccident(rs);

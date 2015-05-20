@@ -37,7 +37,7 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		r.removeObserver(this);
 		roadsToObserve.remove(r);
 	}
-	
+	//traffic planners will keep a record of the road sections where the traffic is problematic
 	public List<RoadSection> getCongestedSections(){
 		List<RoadSection> busySections = new ArrayList<RoadSection>();
 		for (RoadSection rs: roadsToObserve){
@@ -46,12 +46,12 @@ public class TrafficPlanner implements Runnable, RoadSectionObserver{
 		}
 		return busySections;
 	}
-	
+	//traffic planners will run statistics on the vehicles running on the road
 	public double getVehiclesPercentage(Category cat, RoadSection rs){
 		List <Vehicle> vehiclesOfCategory = rs.getVehiclesByCategory(cat);
 		return ((vehiclesOfCategory.size() * 100) / rs.getOccupation());
 	}
-	
+	//warnings will be sent to the public when a given road section is congested and the traffic on that road analysed
 	public void sendCongestionWarning(RoadSection rs){
 		if (rs.isBusy()){
 			System.out.println(this.toString() + " Traffic on " + rs + " is congested !");
