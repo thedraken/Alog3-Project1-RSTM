@@ -84,7 +84,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 		return category;
 	}
 	
-	//only trucks have transponders(?)
+	//only trucks have transponders
 	public void setTransponder(String transponder){
 		if(category.equals(Category.HGV) || category.equals(Category.LGV)){
 			this.transponder = transponder; 
@@ -110,7 +110,9 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	public boolean hasExitedRoadMap(){
 		return exitRoadMap;
 	}
-	
+	//when moving to another road section, a vehicle will first try to enter that road section
+	//and only then will it be removed from the current road section.
+	//in case it doesn't succeed, it still keeps the current position
 	public void changePosition(RoadSection rs){
 		try {
 			rs.insertVehicle(this);
@@ -147,8 +149,7 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 			}
 		}
 		//random selection of the direction the vehicle will take
-		boolean asc = Utils.returnRandomBoolean(0.5);
-		if (asc){
+		if (Utils.returnRandomBoolean(0.5)){
 			this.direction = Direction.ascending;
 		}
 		else{
@@ -252,6 +253,13 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 							changePosition(connections.get(Utils.returnRandomInt(0, connections.size()-1)));
 							success = true;
 							changedRoadLastTime = true;
+							//if a vehicle changes road it gets the possibility to change direction
+							if (Utils.returnRandomBoolean(0.5)){
+								this.direction = Direction.ascending;
+							}
+							else{
+								this.direction = Direction.descending;
+							}
 						}
 					}
 					if (success){
@@ -272,7 +280,6 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	@Override
 	//two vehicles will be considered equal if they have the same id
-	//(should licencePlate be included?)
 	public boolean equals(Object obj){
 		if(obj == null){
 			return false;
@@ -298,8 +305,15 @@ public class Vehicle implements Runnable, Comparable<Vehicle>{
 	
 	@Override
 	public int compareTo(Vehicle v){
-		//TODO
-		return -1;
+		if (id < v.getID())
+			return -1;
+		if (id > v.getID())
+			return 1;
+		if (this.hashCode() > v.hashCode())
+			return 1;
+		if (this.hashCode() < v.hashCode())
+			return -1;
+		return 0;
 	}
 	
 	@Override
