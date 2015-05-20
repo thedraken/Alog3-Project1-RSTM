@@ -100,7 +100,8 @@ public class RoadSection implements Comparable<RoadSection> {
 		if (_listOfVehiclesInside.contains(v)){
 			_listOfVehiclesInside.remove(v);
 			notifyObservers();
-			//TODO check if vehicle has exited road map and close toll record if that is the case
+			if (v.hasExitedRoadMap())
+				v.getTollRecord().setExit(this);
 			return true;
 		}
 		return false;

@@ -46,7 +46,8 @@ public class TollRecord implements Comparable<TollRecord> {
 	}
 	public synchronized void setExit(RoadSection exit){
 		this._exitTime = new DateTime();
-		this._listOfRoadSectionsTravelled.add(exit);
+		if (_listOfRoadSectionsTravelled.get(_listOfRoadSectionsTravelled.size()-1) != exit)
+			_listOfRoadSectionsTravelled.add(exit);
 		hasExited = true;
 	}
 	public Bill generateBill() throws TollIsNotCompleteException{
