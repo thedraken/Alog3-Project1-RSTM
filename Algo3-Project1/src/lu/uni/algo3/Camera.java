@@ -81,7 +81,7 @@ public class Camera implements Comparable<Camera> {
 		List<Vehicle> listV = (List<Vehicle>)Utils.hashSetToArrayList(_location.getAllVehiclesInside());
 		p.setVehicle(listV.get(Utils.returnRandomInt(0, listV.size()-1)));
 	}
-	public synchronized List<Vehicle> stationaryVehicles(){
+	public List<Vehicle> stationaryVehicles(){
 		List<Vehicle> stoppedVehicles = new ArrayList<Vehicle>();
 		for(Vehicle v: _location.getAllVehiclesInside()){
 			if (v.hasStopped()){
@@ -90,10 +90,10 @@ public class Camera implements Comparable<Camera> {
 		}
 		return stoppedVehicles;
 	}
-	public synchronized void updateRoadOccupation(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
+	/*public synchronized void updateRoadOccupation(Vehicle v) throws ExceedMaxOccupationException, ObjectExistsInCollectionException{
 		if (!this._location.alreadyInside(v))
 			this._location.insertVehicle(v);
-	}
+	}*/
 	public void displayWarning(String s){
 		this._warningMessage = s;
 		System.out.println("Camera " + this._id + " has reported a warning: " + s);

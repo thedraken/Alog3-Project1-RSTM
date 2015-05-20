@@ -110,18 +110,18 @@ public class RoadSection implements Comparable<RoadSection> {
 		}
 		return false;
 	}
-	public synchronized List<Vehicle> getVehiclesByCategory(Category c){
-		return Predicates.filterVehicles(_listOfVehiclesInside, Predicates.isCategory(c));
+	public List<Vehicle> getVehiclesByCategory(Category c){
+		return Predicates.filterVehicles(this.getAllVehiclesInside(), Predicates.isCategory(c));
 	}
-	public synchronized boolean isBusy(){
+	public boolean isBusy(){
 		//Road is considered busy if over half occupation
-		int currentCarsOnRoad = _listOfVehiclesInside.size();
+		int currentCarsOnRoad = this.getAllVehiclesInside().size();
 		double percentage = (double)currentCarsOnRoad / (double)_maxOccupation;
 		return percentage > 0.5;
 
 	}
 	public synchronized boolean alreadyInside(Vehicle v){
-		return _listOfVehiclesInside.contains(v);
+		return this.getAllVehiclesInside().contains(v);
 	}
 	public synchronized void registerObserver(RoadSectionObserver obs){
 		_listOfObservers.add(obs);
